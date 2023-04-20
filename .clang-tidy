@@ -12,7 +12,7 @@ Checks: '-*
     readability-*,
 '
 WarningsAsErrors: ''
-HeaderFilterRegex: '.*'
+HeaderFilterRegex: '.*(include).*'
 FormatStyle: file
 CheckOptions:
   - {key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic, value: '1'}
