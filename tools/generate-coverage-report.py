@@ -18,6 +18,9 @@ root = os.path.dirname(root)
 output = os.path.join(root, 'docs')
 output = os.path.join(output, 'coverage.html')
 
+if not os.path.exists(os.path.dirname(output)):
+    os.makedirs(os.path.dirname(output))
+
 gcov = 'llvm-cov gcov' if args.compiler == 'clang' else 'gcov'
 
 subprocess.run(['gcovr', '--gcov-executable', gcov, '--html-details',
