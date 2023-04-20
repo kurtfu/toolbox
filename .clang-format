@@ -1,29 +1,21 @@
 ---
-AccessModifierOffset: -4
-AlignAfterOpenBracket: Align
-AlignArrayOfStructures: Left
-AlignConsecutiveAssignments: None
-AlignConsecutiveBitFields: Consecutive
-AlignConsecutiveDeclarations: None
-AlignConsecutiveMacros: Consecutive
-AlignEscapedNewlines: Left
-AlignOperands: AlignAfterOperator
-AlignTrailingComments: true
-AllowAllArgumentsOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: Empty
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortEnumsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: InlineOnly
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine: All
-AllowShortLoopsOnASingleLine: true
-AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: Yes
-BinPackArguments: false
-BinPackParameters: false
-BitFieldColonSpacing: Both
+Language: Cpp
+Standard: c++17
+
+#-- FILE ----------------------------------------------------------------------
+
+DisableFormat: false
+UseTab: Never
+
+IndentWidth: 4
+TabWidth: 4
+
+ColumnLimit: 0
+MaxEmptyLinesToKeep: 1
+
+#-- BRACES --------------------------------------------------------------------
+
+BreakBeforeBraces: Custom
 BraceWrapping:
     AfterCaseLabel: false
     AfterClass: true
@@ -42,65 +34,121 @@ BraceWrapping:
     SplitEmptyFunction: false
     SplitEmptyRecord: false
     SplitEmptyNamespace: false
-BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: true
+
+#-- CLASSES & NAMESPACES ------------------------------------------------------
+
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
-BreakStringLiterals: true
-ColumnLimit: 0
-CompactNamespaces: false
+
 ConstructorInitializerIndentWidth: 4
-Cpp11BracedListStyle: true
-DeriveLineEnding: true
-DerivePointerAlignment: false
-DisableFormat: false
-EmptyLineAfterAccessModifier: Never
-EmptyLineBeforeAccessModifier: LogicalBlock
-FixNamespaceComments: false
-IncludeBlocks: Preserve
-IndentAccessModifiers: false
-IndentCaseBlocks: false
-IndentCaseLabels: true
-IndentExternBlock: AfterExternBlock
-IndentGotoLabels: false
-IndentPPDirectives: BeforeHash
-IndentRequires: false
-IndentWidth: 4
-IndentWrappedFunctionNames: false
-InsertTrailingCommas: None
-KeepEmptyLinesAtTheStartOfBlocks: false
-LambdaBodyIndentation: Signature
-Language: Cpp
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
-PointerAlignment: Left
-ReferenceAlignment: Pointer
-ReflowComments: true
-SortIncludes: CaseSensitive
-SortUsingDeclarations: true
-SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterTemplateKeyword: true
-SpaceAroundPointerQualifiers: Default
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: false
-SpaceBeforeCpp11BracedList: false
+
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
+
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+AllowShortEnumsOnASingleLine: true
+
+CompactNamespaces: false
+FixNamespaceComments: false
+NamespaceIndentation: All
+
+#-- FUNCTIONS & LAMBDAS -------------------------------------------------------
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortLambdasOnASingleLine: All
+
+AlwaysBreakAfterReturnType: None
+
+BinPackArguments: false
+BinPackParameters: false
+
+AlignAfterOpenBracket: Align
+
+IndentWrappedFunctionNames: false
+LambdaBodyIndentation: Signature
+
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+
+#-- BLOCKS --------------------------------------------------------------------
+
+KeepEmptyLinesAtTheStartOfBlocks: false
+AllowShortBlocksOnASingleLine: Empty
+
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentGotoLabels: false
+
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: true
+
+SpaceBeforeCaseColon: false
+SpaceInEmptyBlock: false
+
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
-SpaceBeforeSquareBrackets: false
-SpaceInEmptyBlock: false
-SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 2
-SpacesInAngles: Never
-SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
-SpacesInContainerLiterals: false
-SpacesInParentheses: false
+
+#-- VARIABLES & OPERANDS ------------------------------------------------------
+
+AlignArrayOfStructures: Left
+AlignConsecutiveDeclarations: None
+AlignConsecutiveAssignments: None
+AlignOperands: AlignAfterOperator
+
+DerivePointerAlignment: false
+
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+
+Cpp11BracedListStyle: true
+
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+
+AlwaysBreakBeforeMultilineStrings: false
+BreakStringLiterals: true
+
+SpaceAfterLogicalNot: false
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+
+SpaceAfterCStyleCast: false
+SpacesInCStyleCastParentheses: false
+
+SpaceBeforeSquareBrackets: false
 SpacesInSquareBrackets: false
-Standard: c++17
-TabWidth: 4
-UseTab: Never
+
+#-- COMMENTS ------------------------------------------------------------------
+
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 2
+ReflowComments: true
+
+#-- MISCELLANEOUS -------------------------------------------------------------
+
+IncludeBlocks: Preserve
+
+IndentExternBlock: AfterExternBlock
+IndentPPDirectives: BeforeHash
+
+SortIncludes: CaseSensitive
+SortUsingDeclarations: true
+
+AlwaysBreakTemplateDeclarations: Yes
+
+SpaceAfterTemplateKeyword: true
+SpacesInAngles: Never
+
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: Left
 ...
