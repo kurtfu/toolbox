@@ -27,6 +27,7 @@
 
 bin/
 build/
+docs/
 
 #------------------------------------------------------------------------------
 # UTILITY FILES
@@ -48,3 +49,5 @@ build/
 
 !.clang-format
 !.clang-tidy
+
+!.editorconfig
