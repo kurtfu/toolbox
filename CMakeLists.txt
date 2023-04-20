@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17.0)
+cmake_minimum_required(VERSION 3.18.0)
 project(utils LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -16,7 +16,7 @@ include(FetchContent)
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.2.1
+    GIT_TAG        v3.3.2
 )
 
 FetchContent_MakeAvailable(Catch2)
@@ -24,21 +24,22 @@ FetchContent_MakeAvailable(Catch2)
 include(CTest)
 include(Catch)
 
-if (MSVC)
-    add_compile_options(/Wall)
-else()
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "(Clang|GNU)")
     add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
 )
 
 add_executable(utils-test
     tests/circular_buffer.cpp
 )
 
-target_link_libraries(utils-test PRIVATE Catch2::Catch2WithMain)
-catch_discover_tests(utils-test)
+target_link_libraries(utils-test
+    PRIVATE
+        Catch2::Catch2WithMain
+)
 
+catch_discover_tests(utils-test)
 add_coverage(utils-test)
