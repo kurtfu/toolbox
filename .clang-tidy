@@ -1,10 +1,15 @@
 ---
-Checks: '-*
+Checks: '-*,
+    boost-*,
     bugprone-*,
     cert-*,
     clang-analyzer-*,
+    concurrency-*,
     cppcoreguidelines-*,
+    google-*,
+    -google-readability-todo,
     hicpp-*,
+    llvm-*,
     misc-*,
     modernize-*,
     -modernize-use-trailing-return-type,
@@ -15,5 +20,8 @@ WarningsAsErrors: ''
 HeaderFilterRegex: '.*(include).*'
 FormatStyle: file
 CheckOptions:
-  - {key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic, value: '1'}
+  - {key: misc-const-correctness.AnalyzeValues, value: false}
+  - {key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic, value: true}
+  - {key: readability-implicit-bool-conversion.AllowIntegerConditions, value: true}
+  - {key: readability-implicit-bool-conversion.AllowPointerConditions, value: true}
 ...
