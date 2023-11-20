@@ -9,7 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(codecov)
+find_package(Python)
 
 include(FetchContent)
 
@@ -35,6 +37,13 @@ add_executable(utils-test
 target_link_libraries(utils-test
     PRIVATE
         Catch2::Catch2WithMain
+)
+
+add_custom_command(
+    TARGET
+        utils-test
+    COMMAND
+        ${Python_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/tools/clear-coverage-data.py
 )
 
 catch_discover_tests(utils-test)
