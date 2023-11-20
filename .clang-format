@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-Standard: c++17
+Standard: Auto
 
 #-- FILE ----------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ ReflowComments: true
 IncludeBlocks: Preserve
 
 IndentExternBlock: AfterExternBlock
-IndentPPDirectives: BeforeHash
+IndentPPDirectives: None
 
 SortIncludes: CaseSensitive
 SortUsingDeclarations: true
