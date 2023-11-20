@@ -1,8 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import argparse
+import shutil
 import subprocess
+import sys
+
+if shutil.which('gcovr') is None:
+    sys.exit('Gcovr not found in the path!')
 
 parser = argparse.ArgumentParser(description='Generate test coverage report.')
 
@@ -25,5 +30,5 @@ gcov = 'llvm-cov gcov' if args.compiler == 'clang' else 'gcov'
 
 subprocess.run(['gcovr', '--gcov-executable', gcov, '--html-details',
                 '-r', root, '-o', output,
-                '--exclude', '.*_deps.*', '--exclude', 'tests.*'
+                '--exclude', '.*_deps.*', '--exclude', '.*tests.*'
                 ])
