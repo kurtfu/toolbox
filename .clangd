@@ -1,0 +1,6 @@
+---
+If:
+    PathMatch: .*(build|tests).*
+Diagnostics:
+    Suppress: '*'
+...
