@@ -24,10 +24,6 @@ FetchContent_MakeAvailable(Catch2)
 include(CTest)
 include(Catch)
 
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "(Clang|GNU)")
-    add_compile_options(-Wall -Wextra -pedantic)
-endif()
-
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
