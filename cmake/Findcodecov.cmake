@@ -264,6 +264,7 @@ function(add_coverage_target TNAME)
 
 
 	add_gcov_target(${TNAME})
+	add_lcov_target(${TNAME})
 endfunction(add_coverage_target)
 
 
@@ -272,3 +273,4 @@ endfunction(add_coverage_target)
 # Include modules for parsing the collected data and output it in a readable
 # format (like gcov and lcov).
 find_package(Gcov)
+find_package(Lcov)
