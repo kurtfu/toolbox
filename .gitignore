@@ -47,6 +47,7 @@ docs/
 !.gitignore
 !.gitmodules
 
+!.clangd
 !.clang-format
 !.clang-tidy
 
