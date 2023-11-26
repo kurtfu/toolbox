@@ -1,6 +1,6 @@
 ---
 If:
-    PathMatch: .*(build|tests).*
+    PathMatch: .*(build).*
 Diagnostics:
     Suppress: '*'
 ...
