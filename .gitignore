@@ -52,3 +52,4 @@ docs/
 !.clang-tidy
 
 !.editorconfig
+!.vscode/
