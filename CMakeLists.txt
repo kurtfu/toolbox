@@ -9,22 +9,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-find_package(codecov)
-find_package(Python)
-
-include(FetchContent)
-
-FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.4.0
-)
-
-FetchContent_MakeAvailable(Catch2)
-
-include(CTest)
-include(Catch)
+find_package(Coverage)
+find_package(Testing)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -34,17 +22,5 @@ add_executable(utils-test
     tests/circular_buffer.cpp
 )
 
-target_link_libraries(utils-test
-    PRIVATE
-        Catch2::Catch2WithMain
-)
-
-add_custom_command(
-    TARGET
-        utils-test
-    COMMAND
-        ${Python_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/tools/clear-coverage-data.py
-)
-
-catch_discover_tests(utils-test)
-add_coverage(utils-test)
+setup_target_for_coverage(utils-test)
+setup_target_for_testing(utils-test)
