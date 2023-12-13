@@ -8,12 +8,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-
-find_package(Coverage)
-find_package(Docs)
-find_package(Testing)
+include(cmake/Coverage.cmake)
+include(cmake/Docs.cmake)
+include(cmake/Testing.cmake)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include

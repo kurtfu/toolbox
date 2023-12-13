@@ -1,5 +1,10 @@
 find_package(Doxygen)
 
+if(NOT Doxygen_FOUND)
+    message(STATUS "Doxygen not found! Documentation disabled.")
+    return()
+endif()
+
 set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/docs)
 
 set(DOXYGEN_RECURSIVE YES)
