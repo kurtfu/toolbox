@@ -1,3 +1,9 @@
+option(ENABLE_LINTERS "Enable linters for project targets" OFF)
+
+if(NOT ENABLE_LINTERS)
+    return()
+endif()
+
 find_program(CLANG_TIDY clang-tidy)
 find_program(INCLUDE_WHAT_YOU_USE include-what-you-use)
 
