@@ -10,6 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include(cmake/Coverage.cmake)
 include(cmake/Docs.cmake)
+include(cmake/Linter.cmake)
 include(cmake/Testing.cmake)
 
 include_directories(
