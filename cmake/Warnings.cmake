@@ -1,0 +1,22 @@
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wcast-align
+    -Wconversion
+    -Wdouble-promotion
+    -Wformat-security
+    -Wimplicit-fallthrough
+    -Wnull-dereference
+    -Wpedantic
+    -Wredundant-decls
+    -Wshadow
+    -Wsign-conversion
+    -Wunused
+    $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
+    $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wnon-virtual-dtor>
+    $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wduplicated-branches>
+    $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wduplicated-cond>
+    $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wlogical-op>
+    $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wuseless-cast>
+)

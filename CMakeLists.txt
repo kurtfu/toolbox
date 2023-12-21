@@ -13,6 +13,7 @@ include(cmake/Docs.cmake)
 include(cmake/Linter.cmake)
 include(cmake/Sanitizer.cmake)
 include(cmake/Testing.cmake)
+include(cmake/Warnings.cmake)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
