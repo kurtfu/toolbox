@@ -5,7 +5,20 @@
 /*  HEADER INCLUDES                                                          */
 /*****************************************************************************/
 
-#include <array>
+#include <array>    // IWYU pragma: export
+#include <cstddef>  // IWYU pragma: export
+
+#if __cplusplus < 201703L
+#define CIRCULAR_BUFFER_NODISCARD
+#else
+#define CIRCULAR_BUFFER_NODISCARD [[nodiscard]]
+#endif  // __cplusplus
+
+#if __cplusplus > 201703L
+#define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR constexpr
+#else
+#define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR
+#endif  // __cplusplus
 
 /*****************************************************************************/
 /*  DATA TYPES                                                               */
@@ -46,22 +59,26 @@ public:
         }
     }
 
+    CIRCULAR_BUFFER_NODISCARD
     reference front()
     {
         return *m_read;
     }
 
+    CIRCULAR_BUFFER_NODISCARD
     const_reference front() const
     {
         return *m_read;
     }
 
-    [[nodiscard]] bool empty() const
+    CIRCULAR_BUFFER_NODISCARD
+    bool empty() const
     {
         return m_size == 0;
     }
 
-    [[nodiscard]] std::size_t size() const
+    CIRCULAR_BUFFER_NODISCARD
+    std::size_t size() const
     {
         return m_size;
     }
