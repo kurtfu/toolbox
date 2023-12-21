@@ -11,6 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 include(cmake/Coverage.cmake)
 include(cmake/Docs.cmake)
 include(cmake/Linter.cmake)
+include(cmake/Sanitizer.cmake)
 include(cmake/Testing.cmake)
 
 include_directories(
@@ -22,4 +23,5 @@ add_executable(utils-test
 )
 
 setup_target_for_coverage(utils-test)
+setup_target_for_sanitizer(utils-test)
 setup_target_for_testing(utils-test)
