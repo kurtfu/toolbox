@@ -84,10 +84,10 @@ public:
     }
 
 private:
-    template <typename U>
-    void push_impl(U item)
+    template <typename U = T>
+    void push_impl(U&& item)
     {
-        replace(m_write, static_cast<U>(item));
+        replace(m_write, std::forward<U>(item));
         advance(m_write);
 
         if (m_size == N)
