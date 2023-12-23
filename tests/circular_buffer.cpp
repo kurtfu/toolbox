@@ -20,6 +20,17 @@ TEST_CASE("Simple push")
     REQUIRE(cbuf.front() == 1);
 }
 
+TEST_CASE("Copy push")
+{
+    circular_buffer<int, 2> cbuf{};
+
+    int value = 2;
+    cbuf.push(value);
+
+    REQUIRE(cbuf.size() == 1);
+    REQUIRE(cbuf.front() == 2);
+}
+
 TEST_CASE("Overflow")
 {
     circular_buffer<int, 2> cbuf{};
@@ -38,4 +49,15 @@ TEST_CASE("Overflow")
         REQUIRE(cbuf.front() == expected++);
         cbuf.pop();
     }
+}
+
+TEST_CASE("Empty pop")
+{
+    circular_buffer<int, 2> cbuf{};
+
+    cbuf.pop();
+    REQUIRE(cbuf.size() == 0);
+
+    cbuf.push(1);
+    REQUIRE(cbuf.front() == 1);
 }
