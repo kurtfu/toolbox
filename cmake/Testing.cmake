@@ -1,7 +1,7 @@
 find_package(Catch2)
 
-include(CTest)
 include(Catch)
+enable_testing()
 
 function(setup_target_for_testing target)
     target_link_libraries(${target}
