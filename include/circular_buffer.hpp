@@ -8,16 +8,20 @@
 #include <array>    // IWYU pragma: export
 #include <cstddef>  // IWYU pragma: export
 
+/*****************************************************************************/
+/*  MACRO DEFINITIONS                                                        */
+/*****************************************************************************/
+
 #if __cplusplus < 201703L
-#define CIRCULAR_BUFFER_NODISCARD
+    #define CIRCULAR_BUFFER_NODISCARD
 #else
-#define CIRCULAR_BUFFER_NODISCARD [[nodiscard]]
+    #define CIRCULAR_BUFFER_NODISCARD [[nodiscard]]
 #endif  // __cplusplus
 
 #if __cplusplus > 201703L
-#define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR constexpr
+    #define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR constexpr
 #else
-#define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR
+    #define CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR
 #endif  // __cplusplus
 
 /*****************************************************************************/

@@ -139,7 +139,7 @@ ReflowComments: true
 IncludeBlocks: Preserve
 
 IndentExternBlock: AfterExternBlock
-IndentPPDirectives: None
+IndentPPDirectives: BeforeHash
 
 SortIncludes: CaseSensitive
 SortUsingDeclarations: true
