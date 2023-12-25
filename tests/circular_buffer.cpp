@@ -56,7 +56,7 @@ TEST_CASE("Empty pop")
     circular_buffer<int, 2> cbuf{};
 
     cbuf.pop();
-    REQUIRE(cbuf.size() == 0);
+    REQUIRE(cbuf.empty());
 
     cbuf.push(1);
     REQUIRE(cbuf.front() == 1);
