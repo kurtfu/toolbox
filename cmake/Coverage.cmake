@@ -1,6 +1,6 @@
 find_program(GCOV_BIN gcov)
 find_program(LCOV_BIN lcov)
-find_program(GCOVR_BIN gcovr)
+find_program(GENHTML_BIN genhtml)
 
 if(NOT GCOV_BIN)
     message(FATAL_ERROR "gcov not found! Aborting...")
@@ -10,15 +10,19 @@ if(NOT LCOV_BIN)
     message(FATAL_ERROR "lcov not found! Aborting...")
 endif()
 
-if(NOT GCOVR_BIN)
-    message(FATAL_ERROR "gcovr not found! Aborting...")
+if(NOT GENHTML_BIN)
+    message(FATAL_ERROR "genhtml not found! Aborting...")
 endif()
 
 add_custom_target(coverage
     COMMAND
         ${CMAKE_COMMAND} -E make_directory docs/coverage
     COMMAND
-        ${GCOVR_BIN} --html-details -o docs/coverage/index.html -e .*build.* -e .*tests.*
+        ${LCOV_BIN} --capture --no-external --directory . -o docs/coverage/base.info
+    COMMAND
+        ${LCOV_BIN} --remove docs/coverage/base.info 'build/*' -o docs/coverage/coverage.info
+    COMMAND
+        ${GENHTML_BIN} docs/coverage/coverage.info --output-directory docs/coverage
     WORKING_DIRECTORY
         ${PROJECT_SOURCE_DIR}
     COMMENT
@@ -26,11 +30,11 @@ add_custom_target(coverage
 )
 
 function(setup_target_for_coverage target)
-    cleanup_coverage_data(${target})
-    append_coverage_compiler_flags(${target})
+    _cleanup_coverage_data(${target})
+    _append_coverage_compiler_flags(${target})
 endfunction()
 
-function(cleanup_coverage_data target)
+function(_cleanup_coverage_data target)
     add_custom_command(
         TARGET
             ${target}
@@ -41,7 +45,7 @@ function(cleanup_coverage_data target)
     )
 endfunction()
 
-function(append_coverage_compiler_flags target)
+function(_append_coverage_compiler_flags target)
     target_compile_options(${target}
         PRIVATE
             -fprofile-arcs
