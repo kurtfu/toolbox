@@ -6,7 +6,12 @@
 /*  HEADER INCLUDES                                                          */
 /*****************************************************************************/
 
+#if !defined(__cpp_exceptions)
+    #include <iostream>
+#endif  // __cpp_exceptions
+
 #include <memory>
+#include <string>
 
 /*****************************************************************************/
 /*  MACRO DEFINITIONS                                                        */
@@ -88,6 +93,23 @@ public:
 
 private:
     value_type m_storage;
+};
+
+class bad_value_exception : public std::exception
+{
+public:
+    explicit bad_value_exception(std::string message)
+        : m_message(std::move(message))
+    {}
+
+    RESULT_NODISCARD
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
+
+private:
+    std::string m_message;
 };
 
 template <typename T, typename E>
@@ -190,6 +212,48 @@ public:
         return *this;
     }
 
+    value_type& value()
+    {
+        if (!m_has_value)
+        {
+            throw_or_mimic("result has no value type!");
+        }
+
+        return m_value;
+    }
+
+    RESULT_NODISCARD
+    const value_type& value() const
+    {
+        if (!m_has_value)
+        {
+            throw_or_mimic("result has no value type!");
+        }
+
+        return m_value;
+    }
+
+    error_type& error()
+    {
+        if (m_has_value)
+        {
+            throw_or_mimic("result has no error type!");
+        }
+
+        return m_error;
+    }
+
+    RESULT_NODISCARD
+    const error_type& error() const
+    {
+        if (m_has_value)
+        {
+            throw_or_mimic("result has no error type!");
+        }
+
+        return m_error;
+    }
+
     RESULT_NODISCARD
     bool has_value() const
     {
@@ -202,6 +266,16 @@ public:
     }
 
 private:
+    void throw_or_mimic(const char* text)
+    {
+#if defined(__cpp_exceptions)
+        throw bad_value_exception(text);
+#else
+        std::cerr << text << '\n';
+        std::terminate();
+#endif  // __cpp_exceptions
+    }
+
     union
     {
         value_type m_value;
