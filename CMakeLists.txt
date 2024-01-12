@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result OUTPUT output)
 
@@ -17,12 +19,12 @@ else()
     message(STATUS "IPO is not supported: ${output}")
 endif()
 
-include(cmake/Coverage.cmake)
-include(cmake/Docs.cmake)
-include(cmake/Linter.cmake)
-include(cmake/Sanitizer.cmake)
-include(cmake/Testing.cmake)
-include(cmake/Warnings.cmake)
+include(Coverage)
+include(Docs)
+include(Linter)
+include(Sanitizer)
+include(Testing)
+include(Warnings)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
