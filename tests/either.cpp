@@ -4,7 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "result.hpp"
+#include "either.hpp"
 
 #include <string>
 
@@ -12,12 +12,12 @@
 /*  TEST CASES                                                               */
 /*****************************************************************************/
 
-result<int, std::string> good()
+either<int, std::string> good()
 {
     return success<int>(0);
 }
 
-result<int, std::string> bad()
+either<int, std::string> bad()
 {
     return fail<std::string>("bad");
 }

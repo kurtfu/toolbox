@@ -32,7 +32,7 @@ include_directories(
 
 add_executable(utils-test
     tests/circular_buffer.cpp
-    tests/result.cpp
+    tests/either.cpp
 )
 
 setup_target_for_coverage(utils-test)

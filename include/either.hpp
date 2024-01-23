@@ -1,5 +1,5 @@
-#ifndef RESULT_HPP
-#define RESULT_HPP
+#ifndef EITHER_HPP
+#define EITHER_HPP
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
 /*****************************************************************************/
@@ -20,17 +20,17 @@
 #if __cplusplus < 201703L
     #define SUCCESS_NODISCARD
     #define FAIL_NODISCARD
-    #define RESULT_NODISCARD
+    #define EITHER_NODISCARD
 #else
     #define SUCCESS_NODISCARD [[nodiscard]]
     #define FAIL_NODISCARD    [[nodiscard]]
-    #define RESULT_NODISCARD  [[nodiscard]]
+    #define EITHER_NODISCARD  [[nodiscard]]
 #endif  // __cplusplus
 
 #if __cplusplus > 201703L
-    #define RESULT_CONSTEXPR_DESTRUCTOR constexpr
+    #define EITHER_CONSTEXPR_DESTRUCTOR constexpr
 #else
-    #define RESULT_CONSTEXPR_DESTRUCTOR
+    #define EITHER_CONSTEXPR_DESTRUCTOR
 #endif  // __cplusplus
 
 /*****************************************************************************/
@@ -102,7 +102,7 @@ public:
         : m_message(std::move(message))
     {}
 
-    RESULT_NODISCARD
+    EITHER_NODISCARD
     const char* what() const noexcept override
     {
         return m_message.c_str();
@@ -113,14 +113,14 @@ private:
 };
 
 template <typename T, typename E>
-class result
+class either
 {
 public:
     using value_type = T;
     using error_type = E;
 
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    constexpr result(success<value_type>&& item)
+    constexpr either(success<value_type>&& item)
         : m_has_value(true)
     {
         ::new (std::addressof(m_value)) value_type(std::move(item.value()));
@@ -128,14 +128,14 @@ public:
     }
 
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    constexpr result(fail<error_type>&& item)
+    constexpr either(fail<error_type>&& item)
         : m_has_value(false)
     {
         ::new (std::addressof(m_error)) error_type(std::move(item.value()));
         std::ignore = std::move(item);
     }
 
-    constexpr result(const result& that)
+    constexpr either(const either& that)
         : m_has_value(that.m_has_value)
     {
         if (m_has_value)
@@ -148,7 +148,7 @@ public:
         }
     }
 
-    constexpr result(result&& that) noexcept
+    constexpr either(either&& that) noexcept
         : m_has_value(that.m_has_value)
     {
         if (m_has_value)
@@ -161,8 +161,8 @@ public:
         }
     }
 
-    RESULT_CONSTEXPR_DESTRUCTOR
-    ~result()
+    EITHER_CONSTEXPR_DESTRUCTOR
+    ~either()
     {
         if (m_has_value)
         {
@@ -174,7 +174,7 @@ public:
         }
     }
 
-    result& operator=(const result& that)
+    either& operator=(const either& that)
     {
         if (this != &that)
         {
@@ -193,7 +193,7 @@ public:
         return *this;
     }
 
-    result& operator=(result&& that) noexcept
+    either& operator=(either&& that) noexcept
     {
         if (this != &that)
         {
@@ -216,18 +216,18 @@ public:
     {
         if (!m_has_value)
         {
-            throw_or_mimic("result has no value type!");
+            throw_or_mimic("either has no value type!");
         }
 
         return m_value;
     }
 
-    RESULT_NODISCARD
+    EITHER_NODISCARD
     const value_type& value() const
     {
         if (!m_has_value)
         {
-            throw_or_mimic("result has no value type!");
+            throw_or_mimic("either has no value type!");
         }
 
         return m_value;
@@ -237,24 +237,24 @@ public:
     {
         if (m_has_value)
         {
-            throw_or_mimic("result has no error type!");
+            throw_or_mimic("either has no error type!");
         }
 
         return m_error;
     }
 
-    RESULT_NODISCARD
+    EITHER_NODISCARD
     const error_type& error() const
     {
         if (m_has_value)
         {
-            throw_or_mimic("result has no error type!");
+            throw_or_mimic("either has no error type!");
         }
 
         return m_error;
     }
 
-    RESULT_NODISCARD
+    EITHER_NODISCARD
     bool has_value() const
     {
         return m_has_value;
@@ -287,9 +287,9 @@ private:
 
 #undef SUCCESS_NODISCARD
 #undef FAIL_NODISCARD
-#undef RESULT_NODISCARD
+#undef EITHER_NODISCARD
 
-#undef RESULT_CONSTEXPR_DESTRUCTOR
+#undef EITHER_CONSTEXPR_DESTRUCTOR
 
 // NOLINTEND(cppcoreguidelines-pro-type-union-access)
-#endif  // RESULT_HPP
+#endif  // EITHER_HPP
