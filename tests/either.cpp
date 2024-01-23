@@ -12,14 +12,14 @@
 /*  TEST CASES                                                               */
 /*****************************************************************************/
 
-either<int, std::string> good()
+utils::either<int, std::string> good()
 {
-    return success<int>(0);
+    return utils::success<int>(0);
 }
 
-either<int, std::string> bad()
+utils::either<int, std::string> bad()
 {
-    return fail<std::string>("bad");
+    return utils::fail<std::string>("bad");
 }
 
 TEST_CASE("Simple success assignment")
@@ -42,12 +42,12 @@ TEST_CASE("Bad value access")
 {
     auto ret = bad();
 
-    REQUIRE_THROWS_AS(ret.value(), bad_value_exception);
+    REQUIRE_THROWS_AS(ret.value(), utils::bad_value_exception);
 }
 
 TEST_CASE("Bad error access")
 {
     auto ret = good();
 
-    REQUIRE_THROWS_AS(ret.error(), bad_value_exception);
+    REQUIRE_THROWS_AS(ret.error(), utils::bad_value_exception);
 }

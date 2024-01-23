@@ -28,108 +28,114 @@
 /*  DATA TYPES                                                               */
 /*****************************************************************************/
 
-template <typename T, std::size_t N>
-class circular_buffer
+namespace utils
 {
-public:
-    using value_type = T;
-    using size_type = std::size_t;
-    using difference_type = std::ptrdiff_t;
-
-    using pointer = value_type*;
-    using const_pointer = value_type const*;
-
-    using reference = value_type&;
-    using const_reference = value_type const&;
-
-    circular_buffer() = default;
-
-    void push(value_type const& item)
+    template <typename T, std::size_t N>
+    class circular_buffer
     {
-        push_impl<value_type const&>(item);
-    }
+    public:
+        using value_type = T;
+        using size_type = std::size_t;
+        using difference_type = std::ptrdiff_t;
 
-    void push(value_type&& item)
-    {
-        push_impl<value_type&&>(std::move(item));
-    }
+        using pointer = value_type*;
+        using const_pointer = value_type const*;
 
-    void pop()
-    {
-        if (m_size != 0)
+        using reference = value_type&;
+        using const_reference = value_type const&;
+
+        circular_buffer() = default;
+
+        void push(value_type const& item)
         {
-            --m_size;
-            advance(m_read);
+            push_impl<value_type const&>(item);
         }
-    }
 
-    CIRCULAR_BUFFER_NODISCARD
-    reference front()
-    {
-        return *m_read;
-    }
-
-    CIRCULAR_BUFFER_NODISCARD
-    const_reference front() const
-    {
-        return *m_read;
-    }
-
-    CIRCULAR_BUFFER_NODISCARD
-    bool empty() const
-    {
-        return m_size == 0;
-    }
-
-    CIRCULAR_BUFFER_NODISCARD
-    std::size_t size() const
-    {
-        return m_size;
-    }
-
-private:
-    template <typename U = T>
-    void push_impl(U&& item)
-    {
-        replace(m_write, std::forward<U>(item));
-        advance(m_write);
-
-        if (m_size == N)
+        void push(value_type&& item)
         {
-            m_read = m_write;
+            push_impl<value_type&&>(std::move(item));
         }
-        else
+
+        void pop()
         {
-            ++m_size;
+            if (m_size != 0)
+            {
+                --m_size;
+                advance(m_read);
+            }
         }
-    }
 
-    void replace(pointer ptr, value_type const& item)
-    {
-        *ptr = item;
-    }
-
-    void replace(pointer ptr, value_type&& item)
-    {
-        *ptr = std::move(item);
-    }
-
-    void advance(pointer& ptr)
-    {
-        std::advance(ptr, 1);
-
-        if (ptr == m_buffer.end())
+        CIRCULAR_BUFFER_NODISCARD
+        reference front()
         {
-            ptr = m_buffer.begin();
+            return *m_read;
         }
-    }
 
-    std::array<T, N> m_buffer{};
+        CIRCULAR_BUFFER_NODISCARD
+        const_reference front() const
+        {
+            return *m_read;
+        }
 
-    T* m_read = m_buffer.begin();
-    T* m_write = m_buffer.begin();
+        CIRCULAR_BUFFER_NODISCARD
+        bool empty() const
+        {
+            return m_size == 0;
+        }
 
-    std::size_t m_size{};
-};
+        CIRCULAR_BUFFER_NODISCARD
+        std::size_t size() const
+        {
+            return m_size;
+        }
+
+    private:
+        template <typename U = T>
+        void push_impl(U&& item)
+        {
+            replace(m_write, std::forward<U>(item));
+            advance(m_write);
+
+            if (m_size == N)
+            {
+                m_read = m_write;
+            }
+            else
+            {
+                ++m_size;
+            }
+        }
+
+        void replace(pointer ptr, value_type const& item)
+        {
+            *ptr = item;
+        }
+
+        void replace(pointer ptr, value_type&& item)
+        {
+            *ptr = std::move(item);
+        }
+
+        void advance(pointer& ptr)
+        {
+            std::advance(ptr, 1);
+
+            if (ptr == m_buffer.end())
+            {
+                ptr = m_buffer.begin();
+            }
+        }
+
+        std::array<T, N> m_buffer{};
+
+        T* m_read = m_buffer.begin();
+        T* m_write = m_buffer.begin();
+
+        std::size_t m_size{};
+    };
+}  // namespace utils
+
+#undef CIRCULAR_BUFFER_NODISCARD
+#undef CIRCULAR_BUFFER_CONSTEXPR_DESTRUCTOR
 
 #endif  // CIRCULAR_BUFFER_HPP
