@@ -10,18 +10,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT result OUTPUT output)
-
-if(result)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-else()
-    message(STATUS "IPO is not supported: ${output}")
-endif()
-
 include(Coverage)
 include(Docs)
 include(Linter)
+include(Optimization)
 include(Sanitizer)
 include(Testing)
 include(Warnings)
