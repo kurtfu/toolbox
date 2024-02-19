@@ -10,23 +10,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(Coverage)
 include(Docs)
 include(Linter)
 include(Optimization)
-include(Sanitizer)
-include(Testing)
+include(Utils)
 include(Warnings)
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
+setup_test(
+    TARGET
+        utils-test
+    SOURCES
+        tests/circular_buffer.cpp
+        tests/either.cpp
+    INCLUDES
+        ${CMAKE_SOURCE_DIR}/include
 )
-
-add_executable(utils-test
-    tests/circular_buffer.cpp
-    tests/either.cpp
-)
-
-setup_target_for_coverage(utils-test)
-setup_target_for_sanitizer(utils-test)
-setup_target_for_testing(utils-test)
