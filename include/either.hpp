@@ -42,6 +42,9 @@ namespace utils
     template <typename T>
     class success
     {
+        template <typename Value, typename Error>
+        friend class either;
+
     public:
         using value_type = T;
         using reference = value_type&;
@@ -71,6 +74,9 @@ namespace utils
     template <typename T>
     class fail
     {
+        template <typename Value, typename Error>
+        friend class either;
+
     public:
         using value_type = T;
         using reference = value_type&;
@@ -114,18 +120,18 @@ namespace utils
         std::string m_message;
     };
 
-    template <typename T, typename E>
+    template <typename Value, typename Error>
     class either
     {
     public:
-        using value_type = T;
-        using error_type = E;
+        using value_type = Value;
+        using error_type = Error;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
         constexpr either(success<value_type>&& item)
             : m_has_value(true)
         {
-            ::new (std::addressof(m_value)) value_type(std::move(item.value()));
+            ::new (std::addressof(m_value)) value_type(std::move(item.m_storage));
             std::ignore = std::move(item);
         }
 
@@ -133,7 +139,7 @@ namespace utils
         constexpr either(fail<error_type>&& item)
             : m_has_value(false)
         {
-            ::new (std::addressof(m_error)) error_type(std::move(item.value()));
+            ::new (std::addressof(m_error)) error_type(std::move(item.m_storage));
             std::ignore = std::move(item);
         }
 
