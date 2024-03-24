@@ -7,6 +7,7 @@
             "binaryDir": "${sourceDir}/build",
             "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
+                "ENABLE_COVERAGE": "ON",
                 "ENABLE_LINTERS": "ON",
                 "ENABLE_IPO": "ON",
                 "ENABLE_SANITIZERS": "ON"

@@ -1,3 +1,5 @@
+option(ENABLE_COVERAGE "Enable code coverage for project targets" OFF)
+
 find_program(GCOV_BIN gcov)
 find_program(LCOV_BIN lcov)
 find_program(GENHTML_BIN genhtml)
@@ -30,6 +32,10 @@ add_custom_target(coverage
 )
 
 function(setup_target_for_coverage target)
+    if(NOT ENABLE_COVERAGE)
+        return()
+    endif()
+
     _cleanup_coverage_data(${target})
     _append_coverage_compiler_flags(${target})
 endfunction()
