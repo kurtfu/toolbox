@@ -2,7 +2,7 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "base",
+            "name": "common-base",
             "hidden": true,
             "binaryDir": "${sourceDir}/build",
             "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
@@ -14,22 +14,46 @@
             }
         },
         {
-            "name": "debug",
-            "inherits": "base",
-            "displayName": "Debug",
-            "description": "Disable optimizations - include debug information.",
+            "name": "debug-base",
+            "hidden": true,
+            "inherits": "common-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
-            "name": "release",
-            "inherits": "base",
-            "displayName": "Release",
-            "description": "Optimize for speed - exclude debug information.",
+            "name": "release-base",
+            "hidden": true,
+            "inherits": "common-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
+        },
+        {
+            "name": "windows-gcc-base",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++",
+                "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
+            }
+        },
+        {
+            "name": "windows-gcc-debug",
+            "inherits": [
+                "debug-base",
+                "windows-gcc-base"
+            ],
+            "displayName": "windows+gcc - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "windows-gcc-release",
+            "inherits": [
+                "release-base",
+                "windows-gcc-base"
+            ],
+            "displayName": "windows+gcc - Release",
+            "description": "Optimize for speed - exclude debug information."
         }
     ]
 }
