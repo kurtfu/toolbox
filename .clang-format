@@ -151,4 +151,6 @@ SpacesInAngles: Never
 
 AlignConsecutiveMacros: Consecutive
 AlignEscapedNewlines: Left
+
+SeparateDefinitionBlocks: Always
 ...
