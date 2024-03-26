@@ -14,7 +14,6 @@ include(Docs)
 include(Linter)
 include(Optimization)
 include(Utils)
-include(Warnings)
 
 setup_test(
     TARGET

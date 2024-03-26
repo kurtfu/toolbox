@@ -1,6 +1,7 @@
 include(Coverage)
 include(Sanitizer)
 include(Testing)
+include(Warnings)
 
 function(setup_executable)
     set(oneValueArgs TARGET)
@@ -12,6 +13,7 @@ function(setup_executable)
     _setup_target_includes(${EXECUTABLE_TARGET} ${EXECUTABLE_INCLUDES})
     _setup_target_libraries(${EXECUTABLE_TARGET} ${EXECUTABLE_LIBRARIES})
 
+    setup_target_warnings(${EXECUTABLE_TARGET})
     setup_target_for_sanitizer(${EXECUTABLE_TARGET})
 endfunction()
 
@@ -24,6 +26,8 @@ function(setup_test)
     _setup_executable_sources(${EXECUTABLE_TARGET} ${EXECUTABLE_SOURCES})
     _setup_target_includes(${EXECUTABLE_TARGET} ${EXECUTABLE_INCLUDES})
     _setup_target_libraries(${EXECUTABLE_TARGET} ${EXECUTABLE_LIBRARIES})
+
+    setup_target_warnings(${EXECUTABLE_TARGET})
 
     setup_target_for_coverage(${EXECUTABLE_TARGET})
     setup_target_for_sanitizer(${EXECUTABLE_TARGET})
