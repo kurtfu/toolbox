@@ -30,6 +30,31 @@
             }
         },
         {
+            "name": "windows-msvc-base",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_GENERATOR": "Visual Studio 17 2022"
+            }
+        },
+        {
+            "name": "windows-msvc-debug",
+            "inherits": [
+                "debug-base",
+                "windows-msvc-base"
+            ],
+            "displayName": "windows+msvc - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "windows-msvc-release",
+            "inherits": [
+                "release-base",
+                "windows-msvc-base"
+            ],
+            "displayName": "windows+msvc - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
             "name": "windows-gcc-base",
             "hidden": true,
             "cacheVariables": {
