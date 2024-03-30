@@ -55,6 +55,32 @@
             "description": "Optimize for speed - exclude debug information."
         },
         {
+            "name": "windows-clang-base",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "clang++",
+                "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
+            }
+        },
+        {
+            "name": "windows-clang-debug",
+            "inherits": [
+                "debug-base",
+                "windows-clang-base"
+            ],
+            "displayName": "windows+clang - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "windows-clang-release",
+            "inherits": [
+                "release-base",
+                "windows-clang-base"
+            ],
+            "displayName": "windows+clang - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
             "name": "windows-gcc-base",
             "hidden": true,
             "cacheVariables": {
