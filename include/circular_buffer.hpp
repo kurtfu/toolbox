@@ -44,6 +44,9 @@ namespace utils
         using reference = value_type&;
         using const_reference = value_type const&;
 
+        using iterator = typename std::array<T, N>::iterator;
+        using const_iterator = typename std::array<T, N>::const_iterator;
+
         circular_buffer() = default;
 
         void push(value_type const& item)
@@ -106,30 +109,30 @@ namespace utils
             }
         }
 
-        void replace(pointer ptr, value_type const& item)
+        void replace(iterator iter, value_type const& item)
         {
-            *ptr = item;
+            *iter = item;
         }
 
-        void replace(pointer ptr, value_type&& item)
+        void replace(iterator iter, value_type&& item)
         {
-            *ptr = std::move(item);
+            *iter = std::move(item);
         }
 
-        void advance(pointer& ptr)
+        void advance(iterator& iter)
         {
-            std::advance(ptr, 1);
+            std::advance(iter, 1);
 
-            if (ptr == m_buffer.end())
+            if (iter == m_buffer.end())
             {
-                ptr = m_buffer.begin();
+                iter = m_buffer.begin();
             }
         }
 
         std::array<T, N> m_buffer{};
 
-        T* m_read = m_buffer.begin();
-        T* m_write = m_buffer.begin();
+        iterator m_read = m_buffer.begin();
+        iterator m_write = m_buffer.begin();
 
         std::size_t m_size{};
     };
