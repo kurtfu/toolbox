@@ -3,8 +3,7 @@
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
 /*****************************************************************************/
-/*  HEADER INCLUDES                                                          */
-/*****************************************************************************/
+/*** HEADER INCLUDES *********************************************************/
 
 #if !defined(__cpp_exceptions)
     #include <iostream>
@@ -14,8 +13,7 @@
 #include <string>
 
 /*****************************************************************************/
-/*  MACRO DEFINITIONS                                                        */
-/*****************************************************************************/
+/*** MACRO DEFINITIONS *******************************************************/
 
 #if __cplusplus < 201703L
     #define SUCCESS_NODISCARD
@@ -34,8 +32,7 @@
 #endif  // __cplusplus
 
 /*****************************************************************************/
-/*  DATA TYPES                                                               */
-/*****************************************************************************/
+/*** DATA TYPES **************************************************************/
 
 namespace utils
 {
@@ -292,6 +289,14 @@ namespace utils
 
         bool m_has_value;
     };
+
+#if __cplusplus >= 201703L
+    template <typename T>
+    success(T) -> success<T>;
+
+    template <typename T>
+    fail(T) -> fail<T>;
+#endif  // __cplusplus
 
 }  // namespace utils
 
