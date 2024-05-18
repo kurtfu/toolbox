@@ -9,7 +9,7 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "stopAtEntry": true,
             "setupCommands": [
                 {
@@ -26,7 +26,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "terminal": "external",
+            "terminal": "integrated",
             "stopOnEntry": false,
             "initCommands": [
                 "settings set target.process.thread.step-avoid-regexp ''"
