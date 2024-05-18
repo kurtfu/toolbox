@@ -1,10 +1,11 @@
 option(ENABLE_IPO "Enable Interprocedural Optimizations for project targets" OFF)
 
-if (NOT ENABLE_IPO)
+if(NOT ENABLE_IPO)
     return()
 endif()
 
 include(CheckIPOSupported)
+
 check_ipo_supported(RESULT result OUTPUT output)
 
 if(result)

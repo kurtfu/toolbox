@@ -47,7 +47,7 @@ set(GCC_CXX_WARNINGS
     -Wuseless-cast
 )
 
-if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(PROJECT_C_WARNINGS ${CLANG_C_WARNINGS})
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set(PROJECT_C_WARNINGS ${GCC_C_WARNINGS})
@@ -59,7 +59,7 @@ else()
     endif()
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set(PROJECT_CXX_WARNINGS ${CLANG_CXX_WARNINGS})
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(PROJECT_CXX_WARNINGS ${GCC_CXX_WARNINGS})
@@ -71,10 +71,10 @@ else()
     endif()
 endif()
 
-function(setup_target_warnings target)
+macro(setup_target_warnings target)
     target_compile_options(${target}
         PRIVATE
             $<$<COMPILE_LANGUAGE:C>:${PROJECT_C_WARNINGS}>
             $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_CXX_WARNINGS}>
     )
-endfunction()
+endmacro()
