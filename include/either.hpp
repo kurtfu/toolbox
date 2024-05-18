@@ -125,19 +125,17 @@ namespace utils
         using error_type = Error;
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr either(success<value_type>&& item)
+        constexpr either(success<value_type> item)
             : m_has_value(true)
         {
             ::new (std::addressof(m_value)) value_type(std::move(item.m_storage));
-            std::ignore = std::move(item);
         }
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr either(fail<error_type>&& item)
+        constexpr either(fail<error_type> item)
             : m_has_value(false)
         {
             ::new (std::addressof(m_error)) error_type(std::move(item.m_storage));
-            std::ignore = std::move(item);
         }
 
         constexpr either(const either& that)
@@ -271,7 +269,7 @@ namespace utils
         }
 
     private:
-        void throw_or_mimic(const char* text)
+        void throw_or_mimic(const char* text) const
         {
 #if defined(__cpp_exceptions)
             throw bad_value_exception(text);
