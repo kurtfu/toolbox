@@ -64,6 +64,17 @@ namespace utils
             return m_storage;
         }
 
+        constexpr reference operator*()
+        {
+            return m_storage;
+        }
+
+        SUCCESS_NODISCARD
+        constexpr const_reference operator*() const
+        {
+            return m_storage;
+        }
+
     private:
         value_type m_storage;
     };
@@ -92,6 +103,17 @@ namespace utils
 
         FAIL_NODISCARD
         const_reference value() const
+        {
+            return m_storage;
+        }
+
+        constexpr reference operator*()
+        {
+            return m_storage;
+        }
+
+        FAIL_NODISCARD
+        constexpr const_reference operator*() const
         {
             return m_storage;
         }
@@ -266,6 +288,17 @@ namespace utils
         explicit operator bool() const noexcept
         {
             return m_has_value;
+        }
+
+        constexpr value_type& operator*()
+        {
+            return m_value;
+        }
+
+        EITHER_NODISCARD
+        constexpr const value_type& operator*() const
+        {
+            return m_value;
         }
 
     private:
