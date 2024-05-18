@@ -1,8 +1,10 @@
-FROM gcc:13.2.0
+FROM debian:bookworm-slim
 
 RUN set -eux; \
         apt-get update; \
         apt-get install -y --no-install-recommends \
+            build-essential \
+            ca-certificates \
             clangd \
             clang-format \
             clang-tidy \
@@ -12,10 +14,13 @@ RUN set -eux; \
             doxygen \
             gcovr \
             gdb \
+            git \
+            graphviz \
             iwyu \
             lcov \
             llvm \
             ninja-build \
+            pkg-config \
             python3 \
             tar \
             unzip \

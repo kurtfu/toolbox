@@ -13,6 +13,7 @@
                 "ms-python.python",
                 "ms-vscode.cmake-tools",
                 "ms-vscode.cpptools",
+				"streetsidesoftware.code-spell-checker",
                 "vadimcn.vscode-lldb"
             ]
         }
