@@ -50,3 +50,28 @@ TEST_CASE("Bad error access")
 
     REQUIRE_THROWS_AS(result.error(), std::logic_error);
 }
+
+TEST_CASE("Monadic 'and_then'")
+{
+    auto advance = [](int value)
+    {
+        return utils::either<int, std::string>(utils::success<int>(value + 1));
+    };
+
+    auto result = good().and_then(advance);
+
+    REQUIRE(result.value() == 1);
+}
+
+TEST_CASE("Monadic 'or_else'")
+{
+    auto encode = [](const std::string& error)
+    {
+        std::string error_code = "Error: " + error;
+        return utils::either<int, std::string>(utils::fail<std::string>(error_code));
+    };
+
+    auto result = bad().or_else(encode);
+
+    REQUIRE(result.error() == "Error: bad");
+}
