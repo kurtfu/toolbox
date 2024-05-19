@@ -10,7 +10,7 @@
 #endif  // __cpp_exceptions
 
 #include <memory>
-#include <string>
+#include <stdexcept>
 
 /*****************************************************************************/
 /*** MACRO DEFINITIONS *******************************************************/
@@ -52,7 +52,6 @@ namespace utils
             : m_storage(std::forward<Args>(args)...)
         {}
 
-        SUCCESS_NODISCARD
         reference value()
         {
             return m_storage;
@@ -95,7 +94,6 @@ namespace utils
             : m_storage(std::forward<Args>(args)...)
         {}
 
-        FAIL_NODISCARD
         reference value()
         {
             return m_storage;
@@ -120,23 +118,6 @@ namespace utils
 
     private:
         value_type m_storage;
-    };
-
-    class bad_value_exception : public std::exception
-    {
-    public:
-        explicit bad_value_exception(std::string message)
-            : m_message(std::move(message))
-        {}
-
-        EITHER_NODISCARD
-        const char* what() const noexcept override
-        {
-            return m_message.c_str();
-        }
-
-    private:
-        std::string m_message;
     };
 
     template <typename Value, typename Error>
@@ -305,7 +286,7 @@ namespace utils
         void throw_or_mimic(const char* text) const
         {
 #if defined(__cpp_exceptions)
-            throw bad_value_exception(text);
+            throw std::logic_error(text);
 #else
             std::cerr << text << '\n';
             std::terminate();

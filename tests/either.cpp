@@ -1,16 +1,15 @@
 /*****************************************************************************/
-/*  HEADER INCLUDES                                                          */
-/*****************************************************************************/
+/*** HEADER INCLUDES *********************************************************/
 
 #include <catch2/catch_test_macros.hpp>
 
 #include "either.hpp"
 
+#include <stdexcept>
 #include <string>
 
 /*****************************************************************************/
-/*  TEST CASES                                                               */
-/*****************************************************************************/
+/*** TEST CASES **************************************************************/
 
 utils::either<int, std::string> good()
 {
@@ -24,30 +23,30 @@ utils::either<int, std::string> bad()
 
 TEST_CASE("Simple success assignment")
 {
-    auto ret = good();
+    auto result = good();
 
-    REQUIRE(ret.has_value() == true);
-    REQUIRE_NOTHROW(ret.value() == 0);
+    REQUIRE(result.has_value() == true);
+    REQUIRE_NOTHROW(result.value() == 0);
 }
 
 TEST_CASE("Simple fail assignment")
 {
-    auto ret = bad();
+    auto result = bad();
 
-    REQUIRE(ret.has_value() == false);
-    REQUIRE_NOTHROW(ret.error() == "bad");
+    REQUIRE(result.has_value() == false);
+    REQUIRE_NOTHROW(result.error() == "bad");
 }
 
 TEST_CASE("Bad value access")
 {
-    auto ret = bad();
+    auto result = bad();
 
-    REQUIRE_THROWS_AS(ret.value(), utils::bad_value_exception);
+    REQUIRE_THROWS_AS(result.value(), std::logic_error);
 }
 
 TEST_CASE("Bad error access")
 {
-    auto ret = good();
+    auto result = good();
 
-    REQUIRE_THROWS_AS(ret.error(), utils::bad_value_exception);
+    REQUIRE_THROWS_AS(result.error(), std::logic_error);
 }
