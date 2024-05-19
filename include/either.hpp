@@ -266,6 +266,32 @@ namespace utils
             return m_has_value;
         }
 
+        template <typename F>
+        constexpr auto and_then(F&& func)
+        {
+            using U = std::result_of_t<F(decltype(m_value))>;
+
+            if (!m_has_value)
+            {
+                return U(utils::fail<Error>(m_error));
+            }
+
+            return std::forward<F>(func)(m_value);
+        }
+
+        template <typename F>
+        constexpr auto or_else(F&& func)
+        {
+            using U = std::result_of_t<F(decltype(m_error))>;
+
+            if (m_has_value)
+            {
+                return U(utils::fail<Error>(m_error));
+            }
+
+            return std::forward<F>(func)(m_error);
+        }
+
         explicit operator bool() const noexcept
         {
             return m_has_value;
