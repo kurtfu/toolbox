@@ -123,6 +123,13 @@ namespace utils
     template <typename Value, typename Error>
     class either
     {
+#if __cplusplus < 201703L
+        template <typename Fn, typename... Args>
+        using result_of = std::result_of_t<Fn(Args...)>;
+#else
+        template <typename Fn, typename... Args>
+        using result_of = std::invoke_result_t<Fn, Args...>;
+#endif  // __cplusplus
     public:
         using value_type = Value;
         using error_type = Error;
@@ -269,7 +276,7 @@ namespace utils
         template <typename F>
         constexpr auto and_then(F&& func)
         {
-            using U = std::result_of_t<F(decltype(m_value))>;
+            using U = result_of<F, decltype(m_value)>;
 
             if (!m_has_value)
             {
@@ -282,7 +289,7 @@ namespace utils
         template <typename F>
         constexpr auto or_else(F&& func)
         {
-            using U = std::result_of_t<F(decltype(m_error))>;
+            using U = result_of<F, decltype(m_error)>;
 
             if (m_has_value)
             {
