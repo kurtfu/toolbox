@@ -14,12 +14,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Coverage)
+include(CPM)
 include(Docs)
 include(Linter)
 include(Optimization)
 include(Utils)
 
-find_package(Catch2)
+if(DEFINED ENV{VCPKG_ROOT})
+    find_package(Catch2)
+else()
+    CPMAddPackage("gh:catchorg/Catch2#v3.6.0")
+endif()
 
 setup_executable(
     TARGET
