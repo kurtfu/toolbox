@@ -293,11 +293,11 @@ namespace utils
         template <typename F>
         constexpr auto and_then(F&& func)
         {
-            using U = detail::result_of<F, decltype(m_value)>;
+            using U = detail::result_of<F, value_type>;
 
             if (!m_has_value)
             {
-                return U(utils::fail<Error>(m_error));
+                return U(utils::fail<error_type>(m_error));
             }
 
             return std::forward<F>(func)(m_value);
@@ -306,11 +306,11 @@ namespace utils
         template <typename F>
         constexpr auto or_else(F&& func)
         {
-            using U = detail::result_of<F, decltype(m_error)>;
+            using U = detail::result_of<F, error_type>;
 
             if (m_has_value)
             {
-                return U(utils::fail<Error>(m_error));
+                return U(utils::fail<error_type>(m_error));
             }
 
             return std::forward<F>(func)(m_error);
@@ -459,7 +459,7 @@ namespace utils
 
             if (!m_has_value)
             {
-                return U(utils::fail<Error>(m_error));
+                return U(utils::fail<error_type>(m_error));
             }
 
             return std::forward<F>(func)();
@@ -468,11 +468,11 @@ namespace utils
         template <typename F>
         constexpr auto or_else(F&& func)
         {
-            using U = detail::result_of<F, decltype(m_error)>;
+            using U = detail::result_of<F, error_type>;
 
             if (m_has_value)
             {
-                return U(utils::fail<Error>(m_error));
+                return U(utils::fail<error_type>(m_error));
             }
 
             return std::forward<F>(func)(m_error);
