@@ -71,10 +71,10 @@ else()
     endif()
 endif()
 
-macro(setup_target_warnings target)
+function(setup_target_warnings target)
     target_compile_options(${target}
         PRIVATE
             $<$<COMPILE_LANGUAGE:C>:${PROJECT_C_WARNINGS}>
             $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_CXX_WARNINGS}>
     )
-endmacro()
+endfunction()

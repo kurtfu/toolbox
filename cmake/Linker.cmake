@@ -15,9 +15,9 @@ else()
     endif()
 endif()
 
-macro(setup_target_link_strategy target)
+function(setup_target_link_strategy target)
     target_link_options(${target}
         PRIVATE
             ${PROJECT_CXX_LINK_OPTIONS}
     )
-endmacro()
+endfunction()

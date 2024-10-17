@@ -28,7 +28,7 @@ BraceWrapping:
     AfterExternBlock: false
     BeforeCatch: true
     BeforeElse: true
-    BeforeLambdaBody: true
+    BeforeLambdaBody: false
     BeforeWhile: false
     IndentBraces: false
     SplitEmptyFunction: false
@@ -62,7 +62,7 @@ NamespaceIndentation: All
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortFunctionsOnASingleLine: InlineOnly
-AllowShortLambdasOnASingleLine: All
+AllowShortLambdasOnASingleLine: Inline
 
 AlwaysBreakAfterReturnType: None
 

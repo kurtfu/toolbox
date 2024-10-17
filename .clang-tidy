@@ -26,4 +26,5 @@ CheckOptions:
   - {key: readability-implicit-bool-conversion.AllowPointerConditions, value: true}
   - {key: readability-uppercase-literal-suffix.NewSuffixes, value: 'L;uL;uLL'}
   - {key: hicpp-uppercase-literal-suffix.NewSuffixes, value: 'L;uL;uLL'}
+  - {key: readability-identifier-length.IgnoredVariableNames, value: '_'}
 ...

@@ -9,35 +9,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Coverage)
-include(CPM)
 include(Docs)
 include(Linter)
 include(Optimization)
 include(Utils)
 
-if(DEFINED ENV{VCPKG_ROOT})
-    find_package(Catch2)
-else()
-    CPMAddPackage("gh:catchorg/Catch2#v3.6.0")
-endif()
+find_package(benchmark)
+find_package(Catch2)
 
 include(CTest)
 include(Catch)
 
-setup_executable(
-    TARGET
-        utils-test
+setup_executable(utils-test
     SOURCES
         tests/circular_buffer.cpp
         tests/either.cpp
     INCLUDES
         include
-    LIBRARIES
+    DEPENDENCIES
         Catch2::Catch2WithMain
 )
 

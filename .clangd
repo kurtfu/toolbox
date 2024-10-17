@@ -1,9 +1,4 @@
 ---
 Diagnostics:
     UnusedIncludes: Strict
----
-If:
-    PathMatch: .*(build).*
-Diagnostics:
-    Suppress: '*'
 ...

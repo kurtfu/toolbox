@@ -2,64 +2,81 @@ include(Linker)
 include(Sanitizer)
 include(Warnings)
 
-set(CLANG_CXX_MISC_OPTIONS
-    -save-temps
-)
+function(setup_executable target)
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES)
 
-set(GCC_CXX_MISC_OPTIONS
-    ${CLANG_CXX_MISC_OPTIONS}
-)
+    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    set(PROJECT_CXX_MISC_OPTIONS ${CLANG_CXX_MISC_OPTIONS})
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(PROJECT_CXX_MISC_OPTIONS ${GCC_CXX_MISC_OPTIONS})
-else()
-    if("CXX" IN_LIST languages)
-        message(STATUS "No extra options set for CXX compiler: '${CMAKE_CXX_COMPILER_ID}'")
-    endif()
-endif()
+    _setup_executable_sources(${target})
+    _setup_target_includes(${target} PUBLIC)
+    _setup_target_dependencies(${target})
 
-function(setup_executable)
-    set(oneValueArgs TARGET)
-    set(multiValueArgs SOURCES INCLUDES LIBRARIES)
+    setup_target_link_strategy(${target})
 
-    cmake_parse_arguments(EXECUTABLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    setup_target_warnings(${target})
+    setup_target_for_sanitizer(${target})
+endfunction()
 
-    _setup_executable_sources(${EXECUTABLE_TARGET} ${EXECUTABLE_SOURCES})
-    _setup_target_includes(${EXECUTABLE_TARGET} ${EXECUTABLE_INCLUDES})
-    _setup_target_libraries(${EXECUTABLE_TARGET} ${EXECUTABLE_LIBRARIES})
-    _setup_misc_options(${EXECUTABLE_TARGET})
+function(setup_library target)
+    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES)
 
-    setup_target_link_strategy(${EXECUTABLE_TARGET})
+    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
-    setup_target_warnings(${EXECUTABLE_TARGET})
-    setup_target_for_sanitizer(${EXECUTABLE_TARGET})
+    _setup_library_sources(${target})
+    _setup_target_includes(${target} PRIVATE)
+    _setup_target_dependencies(${target})
+
+    setup_target_link_strategy(${target})
+
+    setup_target_warnings(${target})
+    setup_target_for_sanitizer(${target})
 endfunction()
 
 macro(_setup_executable_sources target)
     add_executable(${target}
-        ${ARGN}
+        ${TARGET_SOURCES}
     )
 endmacro()
 
-macro(_setup_target_includes target)
+macro(_setup_library_sources target type)
+    add_library(${target} ${type}
+        ${TARGET_SOURCES}
+    )
+endmacro()
+
+macro(_setup_target_includes target scope)
+    set(REGULAR_INCLUDES "")
+    set(SYSTEM_INCLUDES "")
+
+    set(IS_SYSTEM FALSE)
+
+    foreach(token IN LISTS TARGET_INCLUDES)
+        if(token STREQUAL "SYSTEM")
+            set(IS_SYSTEM TRUE)
+        else()
+            if(NOT IS_SYSTEM)
+                list(APPEND REGULAR_INCLUDES ${token})
+            else()
+                list(APPEND SYSTEM_INCLUDES ${token})
+                set(IS_SYSTEM FALSE)
+            endif()
+        endif()
+    endforeach()
+
     target_include_directories(${target}
+        ${scope}
+            ${REGULAR_INCLUDES}
+    )
+
+    target_include_directories(${target} SYSTEM
         PRIVATE
-            ${ARGN}
+            ${SYSTEM_INCLUDES}
     )
 endmacro()
 
-macro(_setup_target_libraries target)
+macro(_setup_target_dependencies target)
     target_link_libraries(${target}
         PRIVATE
-            ${ARGN}
-    )
-endmacro()
-
-macro(_setup_misc_options target)
-    target_compile_options(${target}
-        PRIVATE
-            ${PROJECT_CXX_MISC_OPTIONS}
+            ${TARGET_DEPENDENCIES}
     )
 endmacro()

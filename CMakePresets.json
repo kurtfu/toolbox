@@ -10,7 +10,6 @@
                 "CMAKE_CXX_STANDARD": "17",
                 "ENABLE_COVERAGE": "OFF",
                 "ENABLE_LINTERS": "OFF",
-                "ENABLE_IPO": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
                 "USE_STATIC_STD": "OFF"
             }
@@ -20,7 +19,8 @@
             "hidden": true,
             "inherits": "common-base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_IPO": "OFF"
             }
         },
         {
@@ -28,134 +28,151 @@
             "hidden": true,
             "inherits": "common-base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "ENABLE_IPO": "ON"
             }
         },
         {
-            "name": "windows-msvc-base",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_GENERATOR": "Visual Studio 17 2022"
-            }
-        },
-        {
-            "name": "windows-msvc-debug",
-            "inherits": [
-                "debug-base",
-                "windows-msvc-base"
-            ],
-            "displayName": "windows+msvc - Debug",
-            "description": "Disable optimizations - include debug information."
-        },
-        {
-            "name": "windows-msvc-release",
-            "inherits": [
-                "release-base",
-                "windows-msvc-base"
-            ],
-            "displayName": "windows+msvc - Release",
-            "description": "Optimize for speed - exclude debug information."
-        },
-        {
-            "name": "windows-clang-base",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_CXX_COMPILER": "clang++",
-                "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
-            }
-        },
-        {
-            "name": "windows-clang-debug",
-            "inherits": [
-                "debug-base",
-                "windows-clang-base"
-            ],
-            "displayName": "windows+clang - Debug",
-            "description": "Disable optimizations - include debug information."
-        },
-        {
-            "name": "windows-clang-release",
-            "inherits": [
-                "release-base",
-                "windows-clang-base"
-            ],
-            "displayName": "windows+clang - Release",
-            "description": "Optimize for speed - exclude debug information."
-        },
-        {
-            "name": "windows-gcc-base",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_CXX_COMPILER": "g++",
-                "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
-            }
-        },
-        {
-            "name": "windows-gcc-debug",
-            "inherits": [
-                "debug-base",
-                "windows-gcc-base"
-            ],
-            "displayName": "windows+gcc - Debug",
-            "description": "Disable optimizations - include debug information."
-        },
-        {
-            "name": "windows-gcc-release",
-            "inherits": [
-                "release-base",
-                "windows-gcc-base"
-            ],
-            "displayName": "windows+gcc - Release",
-            "description": "Optimize for speed - exclude debug information."
-        },
-        {
-            "name": "unix-gcc-base",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_CXX_COMPILER": "g++"
-            }
-        },
-        {
-            "name": "unix-gcc-debug",
-            "inherits": [
-                "debug-base",
-                "unix-gcc-base"
-            ],
-            "displayName": "unix+gcc - Debug",
-            "description": "Disable optimizations - include debug information."
-        },
-        {
-            "name": "unix-gcc-release",
-            "inherits": [
-                "release-base",
-                "unix-gcc-base"
-            ],
-            "displayName": "unix+gcc - Release",
-            "description": "Optimize for speed - exclude debug information."
-        },
-        {
-            "name": "unix-clang-base",
+            "name": "clang-base",
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_CXX_COMPILER": "clang++"
             }
         },
         {
+            "name": "gcc-base",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "unix-base",
+            "hidden": true,
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
             "name": "unix-clang-debug",
             "inherits": [
                 "debug-base",
-                "unix-clang-base"
+                "clang-base",
+                "unix-base"
             ],
-            "displayName": "unix+clang - Debug",
+            "displayName": "clang - Debug",
             "description": "Disable optimizations - include debug information."
         },
         {
             "name": "unix-clang-release",
             "inherits": [
                 "release-base",
-                "unix-clang-base"
+                "clang-base",
+                "unix-base"
             ],
-            "displayName": "unix+clang - Release",
+            "displayName": "clang - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
+            "name": "unix-gcc-debug",
+            "inherits": [
+                "debug-base",
+                "gcc-base",
+                "unix-base"
+            ],
+            "displayName": "gcc - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "unix-gcc-release",
+            "inherits": [
+                "release-base",
+                "gcc-base",
+                "unix-base"
+            ],
+            "displayName": "gcc - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
+            "name": "mingw-base",
+            "hidden": true,
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "mingw-clang-debug",
+            "inherits": [
+                "debug-base",
+                "clang-base",
+                "mingw-base"
+            ],
+            "displayName": "clang - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "mingw-clang-release",
+            "inherits": [
+                "release-base",
+                "clang-base",
+                "mingw-base"
+            ],
+            "displayName": "clang - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
+            "name": "mingw-gcc-debug",
+            "inherits": [
+                "debug-base",
+                "gcc-base",
+                "mingw-base"
+            ],
+            "displayName": "gcc - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "mingw-gcc-release",
+            "inherits": [
+                "release-base",
+                "gcc-base",
+                "mingw-base"
+            ],
+            "displayName": "gcc - Release",
+            "description": "Optimize for speed - exclude debug information."
+        },
+        {
+            "name": "msvc-base",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-debug",
+            "inherits": [
+                "debug-base",
+                "msvc-base"
+            ],
+            "displayName": "msvc - Debug",
+            "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "msvc-release",
+            "inherits": [
+                "release-base",
+                "msvc-base"
+            ],
+            "displayName": "msvc - Release",
             "description": "Optimize for speed - exclude debug information."
         }
     ]
