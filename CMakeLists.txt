@@ -32,6 +32,7 @@ setup_executable(utils-test
     SOURCES
         tests/circular_buffer.cpp
         tests/either.cpp
+        tests/maybe.cpp
     INCLUDES
         include
     DEPENDENCIES
