@@ -12,18 +12,9 @@
 /*****************************************************************************/
 /*** MACRO DEFINITIONS *******************************************************/
 
-#if __cplusplus < 201703L
-    #define MAYBE_NODISCARD
-#else
-    #define PAYLOAD_NODISCARD [[nodiscard]]
-    #define MAYBE_NODISCARD   [[nodiscard]]
-#endif  // __cplusplus
-
 #if __cplusplus > 201703L
-    #define PAYLOAD_CONSTEXPR_DESTRUCTOR constexpr
-    #define MAYBE_CONSTEXPR_DESTRUCTOR   constexpr
+    #define MAYBE_CONSTEXPR_DESTRUCTOR constexpr
 #else
-    #define PAYLOAD_CONSTEXPR_DESTRUCTOR
     #define MAYBE_CONSTEXPR_DESTRUCTOR
 #endif  // __cplusplus
 
@@ -35,135 +26,192 @@ namespace utils
     struct nothing_t
     {};
 
+    struct something_t
+    {};
+
     inline constexpr nothing_t nothing{};
+    inline constexpr something_t something{};
 
     template <typename T>
-    class payload
+    class maybe
     {
+        static_assert(!std::is_same_v<std::remove_cv_t<T>, nothing_t>);
+        static_assert(!std::is_same_v<std::remove_cv_t<T>, something_t>);
+
     public:
         using value_type = T;
 
-        payload() = default;
-
-        template <typename... Args>
-        explicit constexpr payload(Args&&... args)
-            : m_storage(std::forward<Args>(args)...)
+        template <typename... Args, std::enable_if_t<std::is_constructible_v<T, Args...>, bool> = true>
+        constexpr maybe(Args&&... args)  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+            : m_storage(something, std::forward<Args>(args)...)
             , m_has_value(true)
         {}
 
-        constexpr payload(const payload& that)
-            : m_has_value(that.m_has_value)
+        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+        constexpr maybe(utils::nothing_t /* unused */)
+            : m_storage()
+        {}
+
+        constexpr maybe(const maybe& that)
         {
-            if (m_has_value)
+            if (that.m_has_value)
             {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                construct(that.m_storage.value);
+                this->construct(that.get());
             }
         }
 
-        constexpr payload(payload&& that) noexcept
-            : m_has_value(that.m_has_value)
+        constexpr maybe(maybe&& that) noexcept
         {
-            if (m_has_value)
+            if (that.m_has_value)
             {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                construct(std::move(that.m_storage.value));
-
+                this->construct(std::move(that.get()));
                 that.m_has_value = false;
             }
         }
 
-        PAYLOAD_CONSTEXPR_DESTRUCTOR
-        ~payload()
+        MAYBE_CONSTEXPR_DESTRUCTOR
+        ~maybe()
         {
-            if (m_has_value)
-            {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                m_storage.value.~value_type();
-            }
+            reset();
         }
 
-        constexpr payload& operator=(const payload& that)
+        constexpr maybe& operator=(const maybe& that)
         {
-            if (this != std::addressof(that))
+            if (this == std::addressof(that))
             {
-                if (m_has_value && that.m_has_value)
-                {
-                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                    m_storage.value = that.m_storage.value;
-                }
-                else
-                {
-                    if (that.m_has_value)
-                    {
-                        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                        construct(that.m_storage.value);
-                    }
-                    else
-                    {
-                        destroy();
-                    }
-
-                    m_has_value = that.m_has_value;
-                }
+                return *this;
             }
 
-            return *this;
-        }
-
-        constexpr payload& operator=(payload&& that) noexcept
-        {
-            if (m_has_value && that.m_has_value)
+            if (this->m_has_value && that.m_has_value)
             {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                m_storage.value = std::move(that.m_storage.value);
+                this->get() = that.get();
             }
             else
             {
                 if (that.m_has_value)
                 {
-                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                    construct(std::move(that.m_storage.value));
+                    this->construct(that.get());
                 }
                 else
                 {
-                    destroy();
+                    this->reset();
                 }
-
-                m_has_value = that.m_has_value;
-                that.m_has_value = false;
             }
 
             return *this;
         }
 
-        PAYLOAD_NODISCARD
-        constexpr bool has_value() const
+        constexpr maybe& operator=(maybe&& that) noexcept
+        {
+            if (this->m_has_value && that.m_has_value)
+            {
+                this->get() = std::move(that.get());
+            }
+            else
+            {
+                if (that.m_has_value)
+                {
+                    this->construct(std::move(that.get()));
+                    that.m_has_value = false;
+                }
+                else
+                {
+                    this->reset();
+                }
+            }
+
+            return *this;
+        }
+
+        constexpr maybe& operator=(nothing_t /* unused */) noexcept
+        {
+            this->reset();
+            return *this;
+        }
+
+        [[nodiscard]] constexpr bool has_value() const
         {
             return m_has_value;
         }
 
-        constexpr value_type* get()
+        explicit constexpr operator bool() const noexcept
         {
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-            return std::addressof(m_storage.value);
+            return m_has_value;
+        }
+
+        constexpr value_type& operator*() & noexcept
+        {
+            return this->get();
+        }
+
+        constexpr value_type&& operator*() && noexcept
+        {
+            m_has_value = true;
+            return std::move(this->get());
+        }
+
+        constexpr value_type* operator->() noexcept
+        {
+            return std::addressof(this->get());
+        }
+
+        constexpr void reset()
+        {
+            if (m_has_value)
+            {
+                destroy();
+            }
+        }
+
+        constexpr void swap(maybe<value_type>& that) noexcept
+        {
+            using std::swap;
+
+            if (this->m_has_value && that.m_has_value)
+            {
+                swap(this->get(), that.get());
+            }
+            else if (this->m_has_value)
+            {
+                that.construct(std::move(this->get()));
+                this->m_has_value = false;
+            }
+            else if (that.m_has_value)
+            {
+                this->construct(std::move(that.get()));
+                that.m_has_value = false;
+            }
+        }
+
+        constexpr friend void swap(maybe<value_type>& lhs, maybe<value_type>& rhs) noexcept
+        {
+            lhs.swap(rhs);
         }
 
     private:
         template <typename... Args>
-        void construct(Args&&... args)
+        constexpr void construct(Args&&... args)
         {
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-            ::new (std::addressof(m_storage.value)) value_type(std::forward<Args>(args)...);
+            ::new (std::addressof(this->get())) value_type(std::forward<Args>(args)...);
+            m_has_value = true;
         }
 
-        void destroy()
+        constexpr void destroy()
         {
-            if (m_has_value)
-            {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-                m_storage.value.~value_type();
-            }
+            m_has_value = false;
+            this->get().~value_type();
+        }
+
+        constexpr value_type& get() noexcept
+        {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+            return m_storage.value;
+        }
+
+        [[nodiscard]] constexpr const value_type& get() const noexcept
+        {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+            return m_storage.value;
         }
 
         union storage
@@ -176,7 +224,7 @@ namespace utils
             {}
 
             template <typename... Args>
-            explicit constexpr storage(Args&&... args)
+            explicit constexpr storage(something_t /* unused */, Args&&... args)
                 : value(std::forward<Args>(args)...)
             {}
 
@@ -197,86 +245,9 @@ namespace utils
     };
 
     template <typename T>
-    class maybe
-    {
-    public:
-        using value_type = T;
-
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr maybe(const value_type& value)
-            : m_payload(value)
-        {}
-
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr maybe(value_type&& value)
-            : m_payload(std::move(value))
-        {}
-
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr maybe(utils::nothing_t /* unused */)
-        {}
-
-        constexpr maybe(const maybe& that) = default;
-        constexpr maybe(maybe&& that) noexcept = default;
-
-        MAYBE_CONSTEXPR_DESTRUCTOR
-        ~maybe() = default;
-
-        constexpr maybe& operator=(const maybe& that) = default;
-        constexpr maybe& operator=(maybe&& that) noexcept = default;
-
-        MAYBE_NODISCARD
-        constexpr bool has_value() const
-        {
-            return m_payload.has_value();
-        }
-
-        template <typename F>
-        constexpr auto and_then(F&& func)
-        {
-            if (has_value())
-            {
-                return std::forward<F>(func)(**this);
-            }
-
-            return *this;
-        }
-
-        template <typename F>
-        constexpr auto or_else(F&& func)
-        {
-            if (!has_value())
-            {
-                return std::forward<F>(func)();
-            }
-
-            return *this;
-        }
-
-        explicit constexpr operator bool() const noexcept
-        {
-            return m_payload.has_value();
-        }
-
-        constexpr value_type& operator*()
-        {
-            return *(m_payload.get());
-        }
-
-        constexpr value_type* operator->()
-        {
-            return m_payload.get();
-        }
-
-    private:
-        payload<value_type> m_payload;
-    };
+    maybe(T) -> maybe<T>;
 }  // namespace utils
 
-#undef PAYLOAD_NODISCARD
-#undef PAYLOAD_NODISCARD
-
-#undef PAYLOAD_CONSTEXPR_DESTRUCTOR
 #undef MAYBE_CONSTEXPR_DESTRUCTOR
 
 #endif  // MAYBE_HPP
