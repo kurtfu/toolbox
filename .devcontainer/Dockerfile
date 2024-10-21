@@ -10,8 +10,11 @@ RUN set -eux; \
             clang-tidy \
             cmake \
             curl \
+            doxygen \
             gdb \
             git \
+            graphviz \
+            lcov \
             pkg-config \
             python3 \
             tar \
