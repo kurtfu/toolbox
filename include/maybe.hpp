@@ -54,7 +54,7 @@ namespace utils
 
         constexpr maybe(const maybe& that)
         {
-            if (that.m_has_value)
+            if (that.has_value())
             {
                 this->construct(that.get());
             }
@@ -62,10 +62,10 @@ namespace utils
 
         constexpr maybe(maybe&& that) noexcept
         {
-            if (that.m_has_value)
+            if (that.has_value())
             {
                 this->construct(std::move(that.get()));
-                that.m_has_value = false;
+                that.reset();
             }
         }
 
@@ -82,13 +82,13 @@ namespace utils
                 return *this;
             }
 
-            if (this->m_has_value && that.m_has_value)
+            if (this->has_value() && that.has_value())
             {
                 this->get() = that.get();
             }
             else
             {
-                if (that.m_has_value)
+                if (that.has_value())
                 {
                     this->construct(that.get());
                 }
@@ -103,16 +103,16 @@ namespace utils
 
         constexpr maybe& operator=(maybe&& that) noexcept
         {
-            if (this->m_has_value && that.m_has_value)
+            if (this->has_value() && that.has_value())
             {
                 this->get() = std::move(that.get());
             }
             else
             {
-                if (that.m_has_value)
+                if (that.has_value())
                 {
                     this->construct(std::move(that.get()));
-                    that.m_has_value = false;
+                    that.reset();
                 }
                 else
                 {
@@ -146,7 +146,6 @@ namespace utils
 
         constexpr value_type&& operator*() && noexcept
         {
-            m_has_value = true;
             return std::move(this->get());
         }
 
@@ -157,7 +156,7 @@ namespace utils
 
         constexpr void reset()
         {
-            if (m_has_value)
+            if (has_value())
             {
                 destroy();
             }
@@ -167,19 +166,19 @@ namespace utils
         {
             using std::swap;
 
-            if (this->m_has_value && that.m_has_value)
+            if (this->has_value() && that.has_value())
             {
                 swap(this->get(), that.get());
             }
-            else if (this->m_has_value)
+            else if (this->has_value())
             {
                 that.construct(std::move(this->get()));
-                this->m_has_value = false;
+                this->reset();
             }
-            else if (that.m_has_value)
+            else if (that.has_value())
             {
                 this->construct(std::move(that.get()));
-                that.m_has_value = false;
+                that.reset();
             }
         }
 

@@ -113,7 +113,7 @@ TEST_CASE("Call Me Maybe")
     REQUIRE(counters.copy_constructor_call == 1);
     REQUIRE(counters.move_constructor_call == 1);
 
-    REQUIRE(counters.destructor_call == 2);
+    REQUIRE(counters.destructor_call == 3);
 
     REQUIRE(counters.copy_assignment_call == 0);
     REQUIRE(counters.move_assignment_call == 0);
@@ -154,7 +154,7 @@ TEST_CASE("Assign Me Maybe")
     REQUIRE(counters.copy_constructor_call == 1);
     REQUIRE(counters.move_constructor_call == 1);
 
-    REQUIRE(counters.destructor_call == 2);
+    REQUIRE(counters.destructor_call == 3);
 
     REQUIRE(counters.copy_assignment_call == 1);
     REQUIRE(counters.move_assignment_call == 1);
@@ -186,7 +186,7 @@ TEST_CASE("Swap Me Maybe")
     REQUIRE(counters.copy_constructor_call == 0);
     REQUIRE(counters.move_constructor_call == 2);
 
-    REQUIRE(counters.destructor_call == 2);
+    REQUIRE(counters.destructor_call == 4);
 
     REQUIRE(counters.copy_assignment_call == 0);
     REQUIRE(counters.move_assignment_call == 0);
