@@ -51,7 +51,9 @@ function(add_coverage target)
         COMMAND
             ${LCOV_BIN} --capture --no-external --directory . -o docs/coverage/base.info
         COMMAND
-            ${GENHTML_BIN} docs/coverage/base.info --output-directory docs/coverage
+            ${LCOV_BIN} --remove docs/coverage/base.info 'catch2' 'tests' -o docs/coverage/filtered.info
+        COMMAND
+            ${GENHTML_BIN} docs/coverage/filtered.info --output-directory docs/coverage
         WORKING_DIRECTORY
             ${PROJECT_SOURCE_DIR}
         COMMENT
