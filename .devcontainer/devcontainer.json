@@ -3,7 +3,7 @@
         "docker-compose.yml"
     ],
     "service": "sandbox",
-    "workspaceFolder": "/sandbox",
+    "workspaceFolder": "/root/sandbox",
     "customizations": {
         "vscode": {
             "extensions": [
