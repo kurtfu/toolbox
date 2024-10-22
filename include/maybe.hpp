@@ -144,12 +144,27 @@ namespace utils
             return this->get();
         }
 
+        constexpr const value_type& operator*() const& noexcept
+        {
+            return this->get();
+        }
+
         constexpr value_type&& operator*() && noexcept
         {
             return std::move(this->get());
         }
 
+        constexpr const value_type&& operator*() const&& noexcept
+        {
+            return std::move(this->get());
+        }
+
         constexpr value_type* operator->() noexcept
+        {
+            return std::addressof(this->get());
+        }
+
+        constexpr const value_type* operator->() const noexcept
         {
             return std::addressof(this->get());
         }
