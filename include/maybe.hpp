@@ -5,6 +5,7 @@
 /*** HEADER INCLUDES *********************************************************/
 
 /// \cond
+#include <functional>
 #include <utility>
 
 /// \endcond
@@ -48,7 +49,7 @@ namespace utils
         {}
 
         // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr maybe(utils::nothing_t /* unused */)
+        constexpr maybe(nothing_t /* unused */)
             : m_storage()
         {}
 
@@ -201,6 +202,52 @@ namespace utils
         {
             lhs.swap(rhs);
         }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) &
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) const&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) && = delete;
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) const&& = delete;
 
     private:
         template <typename... Args>
