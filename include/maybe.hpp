@@ -178,7 +178,7 @@ namespace utils
             }
         }
 
-        constexpr void swap(maybe<value_type>& that) noexcept
+        constexpr void swap(maybe& that) noexcept
         {
             using std::swap;
 
@@ -198,7 +198,7 @@ namespace utils
             }
         }
 
-        constexpr friend void swap(maybe<value_type>& lhs, maybe<value_type>& rhs) noexcept
+        constexpr friend void swap(maybe& lhs, maybe& rhs) noexcept
         {
             lhs.swap(rhs);
         }
@@ -206,7 +206,7 @@ namespace utils
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) &
+        constexpr maybe& and_then(F&& action, Args&&... object) &
         {
             if constexpr (sizeof...(Args) != 0)
             {
@@ -224,7 +224,7 @@ namespace utils
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr const maybe<value_type>& and_then(F&& action, Args&&... object) const&
+        constexpr const maybe& and_then(F&& action, Args&&... object) const&
         {
             if constexpr (sizeof...(Args) != 0)
             {
@@ -242,7 +242,7 @@ namespace utils
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr maybe<value_type>&& and_then(F&& action, Args&&... object) &&
+        constexpr maybe&& and_then(F&& action, Args&&... object) &&
         {
             if constexpr (sizeof...(Args) != 0)
             {
