@@ -224,7 +224,7 @@ namespace utils
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) const&
+        constexpr const maybe<value_type>& and_then(F&& action, Args&&... object) const&
         {
             if constexpr (sizeof...(Args) != 0)
             {
@@ -242,12 +242,20 @@ namespace utils
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) && = delete;
+        constexpr maybe<value_type>&& and_then(F&& action, Args&&... object) &&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
-        constexpr maybe<value_type>& and_then(F&& action, Args&&... object) const&& = delete;
+            if (has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            }
+
+            return std::move(*this);
+        }
 
     private:
         template <typename... Args>
