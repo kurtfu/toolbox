@@ -317,6 +317,114 @@ namespace utils
             return U(nothing);
         }
 
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr maybe& or_else(F&& action, Args&&... object) &
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr const maybe& or_else(F&& action, Args&&... object) const&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr maybe&& or_else(F&& action, Args&&... object) &&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return std::move(*this);
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr auto or_else(F&& action, Args&&... object) &
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr auto or_else(F&& action, Args&&... object) const&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return *this;
+        }
+
+        template <typename F,
+                  typename... Args,
+                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        constexpr auto or_else(F&& action, Args&&... object) &&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            if (!has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            }
+
+            return std::move(*this);
+        }
+
     private:
         template <typename... Args>
         constexpr void construct(Args&&... args)
