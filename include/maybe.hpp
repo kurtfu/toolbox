@@ -203,6 +203,60 @@ namespace utils
             lhs.swap(rhs);
         }
 
+        template <typename F, typename... Args>
+        constexpr auto now(F&& action, Args&&... object) &
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+
+            if (has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            }
+
+            return U(nothing);
+        }
+
+        template <typename F, typename... Args>
+        constexpr auto now(F&& action, Args&&... object) const&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+
+            if (has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            }
+
+            return U(nothing);
+        }
+
+        template <typename F, typename... Args>
+        constexpr auto now(F&& action, Args&&... object) &&
+        {
+            if constexpr (sizeof...(Args) != 0)
+            {
+                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
+            }
+
+            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type>>;
+
+            if (has_value())
+            {
+                return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., std::move(**this));
+            }
+
+            return U(nothing);
+        }
+
         template <typename F,
                   typename... Args,
                   std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
