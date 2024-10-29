@@ -11,15 +11,6 @@
 /// \endcond
 
 /*****************************************************************************/
-/*** MACRO DEFINITIONS *******************************************************/
-
-#if __cplusplus > 201703L
-    #define MAYBE_CONSTEXPR_DESTRUCTOR constexpr
-#else
-    #define MAYBE_CONSTEXPR_DESTRUCTOR
-#endif  // __cplusplus
-
-/*****************************************************************************/
 /*** DATA TYPES **************************************************************/
 
 namespace utils
@@ -70,8 +61,7 @@ namespace utils
             }
         }
 
-        MAYBE_CONSTEXPR_DESTRUCTOR
-        ~maybe()
+        constexpr ~maybe()
         {
             reset();
         }
@@ -206,12 +196,7 @@ namespace utils
         template <typename F, typename... Args>
         constexpr auto now(F&& action, Args&&... object) &
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
             if (has_value())
             {
@@ -224,12 +209,7 @@ namespace utils
         template <typename F, typename... Args>
         constexpr auto now(F&& action, Args&&... object) const&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
             if (has_value())
             {
@@ -242,12 +222,7 @@ namespace utils
         template <typename F, typename... Args>
         constexpr auto now(F&& action, Args&&... object) &&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type>>;
 
             if (has_value())
             {
@@ -257,16 +232,10 @@ namespace utils
             return U(nothing);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr maybe& and_then(F&& action, Args&&... object) &
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
@@ -275,16 +244,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr const maybe& and_then(F&& action, Args&&... object) const&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
@@ -293,16 +256,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr maybe&& and_then(F&& action, Args&&... object) &&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
@@ -311,17 +268,11 @@ namespace utils
             return std::move(*this);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr auto and_then(F&& action, Args&&... object) &
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
             if (has_value())
             {
@@ -331,17 +282,11 @@ namespace utils
             return U(nothing);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr auto and_then(F&& action, Args&&... object) const&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
             if (has_value())
             {
@@ -351,17 +296,11 @@ namespace utils
             return U(nothing);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
         constexpr auto and_then(F&& action, Args&&... object) &&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
-            using U = std::remove_cv_t<std::invoke_result_t<F, Args..., value_type&&>>;
+            using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&&>>;
 
             if (has_value())
             {
@@ -371,16 +310,10 @@ namespace utils
             return U(nothing);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr maybe& or_else(F&& action, Args&&... object) &
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -389,16 +322,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr const maybe& or_else(F&& action, Args&&... object) const&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -407,16 +334,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr maybe&& or_else(F&& action, Args&&... object) &&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -425,16 +346,10 @@ namespace utils
             return std::move(*this);
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr auto or_else(F&& action, Args&&... object) &
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -443,16 +358,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr auto or_else(F&& action, Args&&... object) const&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -461,16 +370,10 @@ namespace utils
             return *this;
         }
 
-        template <typename F,
-                  typename... Args,
-                  std::enable_if_t<!std::is_same_v<std::invoke_result_t<F, Args...>, void>, bool> = true>
+        template <typename F, typename... Args>
+            requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
         constexpr auto or_else(F&& action, Args&&... object) &&
         {
-            if constexpr (sizeof...(Args) != 0)
-            {
-                static_assert(std::is_class_v<std::remove_pointer_t<std::remove_reference_t<Args>>...>);
-            }
-
             if (!has_value())
             {
                 return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
@@ -538,7 +441,5 @@ namespace utils
     template <typename T>
     maybe(T) -> maybe<T>;
 }  // namespace utils
-
-#undef MAYBE_CONSTEXPR_DESTRUCTOR
 
 #endif  // MAYBE_HPP
