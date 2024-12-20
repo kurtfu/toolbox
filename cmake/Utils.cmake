@@ -3,7 +3,7 @@ include(Sanitizer)
 include(Warnings)
 
 function(setup_executable target)
-    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES)
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES)
 
     cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
@@ -11,14 +11,22 @@ function(setup_executable target)
     _setup_target_includes(${target} PUBLIC)
     _setup_target_dependencies(${target})
 
+    if (DEFINED TARGET_PROPERTIES)
+        _setup_target_properties(${target})
+    endif()
+
     setup_target_link_strategy(${target})
 
     setup_target_warnings(${target})
     setup_target_for_sanitizer(${target})
+
+    if(TARGET_INSTALL)
+        install(TARGETS ${target} DESTINATION ${TARGET_INSTALL})
+    endif()
 endfunction()
 
 function(setup_library target)
-    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES)
+    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES)
 
     cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
@@ -26,10 +34,18 @@ function(setup_library target)
     _setup_target_includes(${target} PRIVATE)
     _setup_target_dependencies(${target})
 
+    if (DEFINED TARGET_PROPERTIES)
+        _setup_target_properties(${target})
+    endif()
+
     setup_target_link_strategy(${target})
 
     setup_target_warnings(${target})
     setup_target_for_sanitizer(${target})
+
+    if(TARGET_INSTALL)
+        install(TARGETS ${target} DESTINATION ${TARGET_INSTALL})
+    endif()
 endfunction()
 
 macro(_setup_executable_sources target)
@@ -80,3 +96,10 @@ macro(_setup_target_dependencies target)
             ${TARGET_DEPENDENCIES}
     )
 endmacro()
+
+function(_setup_target_properties target)
+    set_target_properties(${target}
+        PROPERTIES
+            ${TARGET_PROPERTIES}
+    )
+endfunction()
