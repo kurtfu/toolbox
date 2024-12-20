@@ -41,10 +41,6 @@ set(GCC_C_WARNINGS
 
 set(GCC_CXX_WARNINGS
     ${CLANG_CXX_WARNINGS}
-    -Wduplicated-branches
-    -Wduplicated-cond
-    -Wlogical-op
-    -Wuseless-cast
 )
 
 if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
