@@ -21,6 +21,7 @@ WarningsAsErrors: ''
 HeaderFilterRegex: '.*(include).*'
 FormatStyle: file
 CheckOptions:
+  - {key: bugprone-easily-swappable-parameters.MinimumLength, value: 3}
   - {key: misc-const-correctness.AnalyzeValues, value: false}
   - {key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic, value: true}
   - {key: readability-implicit-bool-conversion.AllowIntegerConditions, value: true}
