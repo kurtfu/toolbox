@@ -186,39 +186,52 @@ public:
     }
 
     template <typename F, typename... Args>
-    constexpr auto now(F&& action, Args&&... object) &
+    constexpr auto now(F&& fn, Args&&... args) &
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return U(utils::nothing);
     }
 
     template <typename F, typename... Args>
-    constexpr auto now(F&& action, Args&&... object) const&
+    constexpr auto now(F&& fn, Args&&... args) const&
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return U(utils::nothing);
     }
 
     template <typename F, typename... Args>
-    constexpr auto now(F&& action, Args&&... object) &&
+    constexpr auto now(F&& fn, Args&&... args) &&
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., std::move(**this));
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., std::move(**this));
+        }
+
+        return U(utils::nothing);
+    }
+
+    template <typename F, typename... Args>
+    constexpr auto now(F&& fn, Args&&... args) const&&
+    {
+        using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type>>;
+
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., std::move(**this));
         }
 
         return U(utils::nothing);
@@ -226,11 +239,11 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr maybe_t& and_then(F&& action, Args&&... object) &
+    constexpr maybe_t& and_then(F&& fn, Args&&... args) &
     {
         if (has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return *this;
@@ -238,11 +251,11 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr const maybe_t& and_then(F&& action, Args&&... object) const&
+    constexpr const maybe_t& and_then(F&& fn, Args&&... args) const&
     {
         if (has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return *this;
@@ -250,11 +263,23 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr maybe_t&& and_then(F&& action, Args&&... object) &&
+    constexpr maybe_t&& and_then(F&& fn, Args&&... args) &&
     {
         if (has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
+        }
+
+        return std::move(*this);
+    }
+
+    template <typename F, typename... Args>
+        requires(std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
+    constexpr maybe_t&& and_then(F&& fn, Args&&... args) const&&
+    {
+        if (has_value())
+        {
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return std::move(*this);
@@ -262,13 +287,13 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr auto and_then(F&& action, Args&&... object) &
+    constexpr auto and_then(F&& fn, Args&&... args) &
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return U(utils::nothing);
@@ -276,13 +301,13 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr auto and_then(F&& action, Args&&... object) const&
+    constexpr auto and_then(F&& fn, Args&&... args) const&
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., **this);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., **this);
         }
 
         return U(utils::nothing);
@@ -290,13 +315,27 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
-    constexpr auto and_then(F&& action, Args&&... object) &&
+    constexpr auto and_then(F&& fn, Args&&... args) &&
     {
         using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&&>>;
 
         if (has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)..., std::move(**this));
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., std::move(**this));
+        }
+
+        return U(utils::nothing);
+    }
+
+    template <typename F, typename... Args>
+        requires(!std::is_same_v<std::invoke_result_t<F, Args..., value_type&>, void>)
+    constexpr auto and_then(F&& fn, Args&&... args) const&&
+    {
+        using U = std::remove_cvref_t<std::invoke_result_t<F, Args..., value_type&&>>;
+
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)..., std::move(**this));
         }
 
         return U(utils::nothing);
@@ -304,11 +343,11 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr maybe_t& or_else(F&& action, Args&&... object) &
+    constexpr maybe_t& or_else(F&& fn, Args&&... args) &
     {
         if (!has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return *this;
@@ -316,11 +355,11 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr const maybe_t& or_else(F&& action, Args&&... object) const&
+    constexpr const maybe_t& or_else(F&& fn, Args&&... args) const&
     {
         if (!has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return *this;
@@ -328,11 +367,23 @@ public:
 
     template <typename F, typename... Args>
         requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr maybe_t&& or_else(F&& action, Args&&... object) &&
+    constexpr maybe_t&& or_else(F&& fn, Args&&... args) &&
     {
         if (!has_value())
         {
-            std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
+        }
+
+        return std::move(*this);
+    }
+
+    template <typename F, typename... Args>
+        requires(std::is_same_v<std::invoke_result_t<F, Args...>, void>)
+    constexpr maybe_t&& or_else(F&& fn, Args&&... args) const&&
+    {
+        if (!has_value())
+        {
+            std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return std::move(*this);
@@ -340,11 +391,11 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr auto or_else(F&& action, Args&&... object) &
+    constexpr auto or_else(F&& fn, Args&&... args) &
     {
         if (!has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return *this;
@@ -352,11 +403,11 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr auto or_else(F&& action, Args&&... object) const&
+    constexpr auto or_else(F&& fn, Args&&... args) const&
     {
         if (!has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return *this;
@@ -364,11 +415,23 @@ public:
 
     template <typename F, typename... Args>
         requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
-    constexpr auto or_else(F&& action, Args&&... object) &&
+    constexpr auto or_else(F&& fn, Args&&... args) &&
     {
         if (!has_value())
         {
-            return std::invoke(std::forward<F>(action), std::forward<Args>(object)...);
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
+        }
+
+        return std::move(*this);
+    }
+
+    template <typename F, typename... Args>
+        requires(!std::is_same_v<std::invoke_result_t<F, Args...>, void>)
+    constexpr auto or_else(F&& fn, Args&&... args) const&&
+    {
+        if (!has_value())
+        {
+            return std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
         }
 
         return std::move(*this);
