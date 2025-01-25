@@ -24,6 +24,8 @@ CheckOptions:
   - {key: bugprone-easily-swappable-parameters.MinimumLength, value: 3}
   - {key: misc-const-correctness.AnalyzeValues, value: false}
   - {key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic, value: true}
+  - {key: readability-identifier-length.MinimumVariableNameLength, value: 2}
+  - {key: readability-identifier-length.MinimumParameterNameLength, value: 2}
   - {key: readability-implicit-bool-conversion.AllowIntegerConditions, value: true}
   - {key: readability-implicit-bool-conversion.AllowPointerConditions, value: true}
   - {key: readability-uppercase-literal-suffix.NewSuffixes, value: 'L;uL;uLL'}
