@@ -97,8 +97,8 @@ TEST_CASE("Call Me Maybe")
     Counters counters{};
 
     {
-        utils::maybe<Widget> widget{std::addressof(counters)};
-        utils::maybe<Widget> none = utils::nothing;
+        maybe_t<Widget> widget{std::addressof(counters)};
+        maybe_t<Widget> none = utils::nothing;
 
         auto copy = widget;
         auto move = std::move(widget);
@@ -126,12 +126,12 @@ TEST_CASE("Assign Me Maybe")
     Counters counters{};
 
     {
-        utils::maybe<Widget> widget{std::addressof(counters)};
+        maybe_t<Widget> widget{std::addressof(counters)};
 
-        utils::maybe<Widget> copy = utils::nothing;
-        utils::maybe<Widget> move = utils::nothing;
+        maybe_t<Widget> copy = utils::nothing;
+        maybe_t<Widget> move = utils::nothing;
 
-        utils::maybe<Widget> none = utils::nothing;
+        maybe_t<Widget> none = utils::nothing;
 
         copy = widget;
         move = std::move(widget);
@@ -167,10 +167,10 @@ TEST_CASE("Swap Me Maybe")
     Counters counters{};
 
     {
-        utils::maybe<Widget> lhs{std::addressof(counters)};
-        utils::maybe<Widget> rhs{std::addressof(counters)};
+        maybe_t<Widget> lhs{std::addressof(counters)};
+        maybe_t<Widget> rhs{std::addressof(counters)};
 
-        utils::maybe<Widget> none = utils::nothing;
+        maybe_t<Widget> none = utils::nothing;
 
         swap(lhs, rhs);
 
