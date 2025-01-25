@@ -17,6 +17,21 @@
 #define panic(message) annotate_and_terminate(message, __FILE__, __LINE__)
 
 /*****************************************************************************/
+/*** CLASSES *****************************************************************/
+
+namespace utils
+{
+    struct nothing_t
+    {};
+
+    struct something_t
+    {};
+
+    inline constexpr nothing_t nothing{};
+    inline constexpr something_t something{};
+}  // namespace utils
+
+/*****************************************************************************/
 /*** FUNCTION DEFINITIONS ****************************************************/
 
 template <typename Duration, typename Period, typename F, typename... Args>
