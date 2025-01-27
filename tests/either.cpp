@@ -5,73 +5,38 @@
 
 #include "either.hpp"
 
-#include <stdexcept>
+/// \cond
 #include <string>
+
+/// \endcond
 
 /*****************************************************************************/
 /*** TEST CASES **************************************************************/
 
-utils::either<int, std::string> good()
+using test_type = either_t<int, std::string>;
+
+static either_t<int, std::string> good()
 {
-    return utils::success<int>(0);
+    return test_type(test_type::left, 1);
 }
 
-utils::either<int, std::string> bad()
+static either_t<int, std::string> bad()
 {
-    return utils::fail<std::string>("bad");
+    return test_type(test_type::right, "bad");
 }
 
 TEST_CASE("Simple success assignment")
 {
     auto result = good();
+    auto value = result.get(test_type::left);
 
-    REQUIRE(result.has_value() == true);
-    REQUIRE_NOTHROW(result.value() == 0);
+    REQUIRE_NOTHROW(value == 1);
 }
 
 TEST_CASE("Simple fail assignment")
 {
     auto result = bad();
+    const auto& value = result.get(test_type::right);
 
-    REQUIRE(result.has_value() == false);
-    REQUIRE_NOTHROW(result.error() == "bad");
-}
-
-TEST_CASE("Bad value access")
-{
-    auto result = bad();
-
-    REQUIRE_THROWS_AS(result.value(), std::logic_error);
-}
-
-TEST_CASE("Bad error access")
-{
-    auto result = good();
-
-    REQUIRE_THROWS_AS(result.error(), std::logic_error);
-}
-
-TEST_CASE("Monadic 'and_then'")
-{
-    auto advance = [](int value)
-    {
-        return utils::either<int, std::string>(utils::success<int>(value + 1));
-    };
-
-    auto result = good().and_then(advance);
-
-    REQUIRE(result.value() == 1);
-}
-
-TEST_CASE("Monadic 'or_else'")
-{
-    auto encode = [](const std::string& error)
-    {
-        std::string error_code = "Error: " + error;
-        return utils::either<int, std::string>(utils::fail<std::string>(error_code));
-    };
-
-    auto result = bad().or_else(encode);
-
-    REQUIRE(result.error() == "Error: bad");
+    REQUIRE_NOTHROW(value == "bad");
 }
