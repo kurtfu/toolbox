@@ -1,512 +1,197 @@
 #ifndef EITHER_HPP
 #define EITHER_HPP
-// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
 /*****************************************************************************/
 /*** HEADER INCLUDES *********************************************************/
 
-#if !defined(__cpp_exceptions)
-    #include <iostream>
-#endif  // __cpp_exceptions
-
+/// \cond
 #include <memory>
-#include <stdexcept>
+#include <utility>
+
+/// \endcond
 
 /*****************************************************************************/
-/*** MACRO DEFINITIONS *******************************************************/
+/*** CLASSES *****************************************************************/
 
-#if __cplusplus < 201703L
-    #define SUCCESS_NODISCARD
-    #define FAIL_NODISCARD
-    #define EITHER_NODISCARD
-#else
-    #define SUCCESS_NODISCARD [[nodiscard]]
-    #define FAIL_NODISCARD    [[nodiscard]]
-    #define EITHER_NODISCARD  [[nodiscard]]
-#endif  // __cplusplus
-
-#if __cplusplus > 201703L
-    #define EITHER_CONSTEXPR_DESTRUCTOR constexpr
-#else
-    #define EITHER_CONSTEXPR_DESTRUCTOR
-#endif  // __cplusplus
-
-/*****************************************************************************/
-/*** DATA TYPES **************************************************************/
-
-namespace utils
+template <typename Left, typename Right = void>
+class either_t
 {
-    namespace detail
+    struct left_t
+    {};
+
+    struct right_t
+    {};
+
+    struct empty_t
+    {};
+
+public:
+    static constexpr left_t left;
+    static constexpr right_t right;
+
+    constexpr either_t() = default;
+
+    template <typename... Args>
+    explicit constexpr either_t(left_t /* unused */, Args&&... args)
+        : m_storage(left, std::forward<Args>(args)...)
+    {}
+
+    template <typename... Args>
+    explicit constexpr either_t(right_t /* unused */, Args&&... args)
+        : m_storage(right, std::forward<Args>(args)...)
+    {}
+
+    template <typename... Args>
+    void construct(left_t /* unused */, Args&&... args)
     {
-#if __cplusplus < 201703L
-        template <typename Fn, typename... Args>
-        using result_of = std::result_of_t<Fn(Args...)>;
-#else
-        template <typename Fn, typename... Args>
-        using result_of = std::invoke_result_t<Fn, Args...>;
-#endif  // __cplusplus
+        ::new (std::addressof(this->get(left))) Left(std::forward<Args>(args)...);
+    }
 
-        inline void throw_or_mimic(const char* text)
-        {
-#if defined(__cpp_exceptions)
-            throw std::logic_error(text);
-#else
-            std::cerr << text << '\n';
-            std::terminate();
-#endif  // __cpp_exceptions
-        }
-    }  // namespace detail
-
-    template <typename T>
-    class success
+    template <typename... Args>
+    void construct(right_t /* unused */, Args&&... args)
     {
-        template <typename Value, typename Error, typename>
-        friend class either;
+        ::new (std::addressof(this->get(right))) Right(std::forward<Args>(args)...);
+    }
 
-    public:
-        using value_type = T;
-        using reference = value_type&;
-        using const_reference = const value_type&;
+    void destruct(left_t /* unused */)
+    {
+        this->get(left).~Left();
+    }
+
+    void destruct(right_t /* unused */)
+    {
+        this->get(right).~Right();
+    }
+
+    constexpr Left& get(left_t /* unused */) noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_left;
+    }
+
+    [[nodiscard]] constexpr const Left& get(left_t /* unused */) const noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_left;
+    }
+
+    constexpr Right& get(right_t /* unused */) noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_right;
+    }
+
+    [[nodiscard]] constexpr const Right& get(right_t /* unused */) const noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_right;
+    }
+
+private:
+    union storage_t
+    {
+        constexpr storage_t()
+            : m_nothing()
+        {}
 
         template <typename... Args>
-        explicit success(Args... args)
-            : m_storage(std::forward<Args>(args)...)
+        explicit constexpr storage_t(left_t /* unused */, Args&&... args)
+            : m_left(std::forward<Args>(args)...)
         {}
-
-        reference value()
-        {
-            return m_storage;
-        }
-
-        SUCCESS_NODISCARD
-        const_reference value() const
-        {
-            return m_storage;
-        }
-
-        constexpr reference operator*()
-        {
-            return m_storage;
-        }
-
-        SUCCESS_NODISCARD
-        constexpr const_reference operator*() const
-        {
-            return m_storage;
-        }
-
-    private:
-        value_type m_storage;
-    };
-
-    template <typename T>
-    class fail
-    {
-        template <typename Value, typename Error, typename>
-        friend class either;
-
-    public:
-        using value_type = T;
-        using reference = value_type&;
-        using const_reference = const value_type&;
 
         template <typename... Args>
-        explicit fail(Args... args)
-            : m_storage(std::forward<Args>(args)...)
+        explicit constexpr storage_t(right_t /* unused */, Args&&... args)
+            : m_right(std::forward<Args>(args)...)
         {}
 
-        reference value()
-        {
-            return m_storage;
-        }
+        constexpr storage_t(const storage_t&) = delete;
+        constexpr storage_t(storage_t&&) noexcept = delete;
 
-        FAIL_NODISCARD
-        const_reference value() const
-        {
-            return m_storage;
-        }
+        ~storage_t() {};
 
-        constexpr reference operator*()
-        {
-            return m_storage;
-        }
+        constexpr storage_t& operator=(const storage_t&) = delete;
+        constexpr storage_t& operator=(storage_t&&) noexcept = delete;
 
-        FAIL_NODISCARD
-        constexpr const_reference operator*() const
-        {
-            return m_storage;
-        }
+        Left m_left;
+        Right m_right;
 
-    private:
-        value_type m_storage;
+        empty_t m_nothing;
     };
 
-    template <typename Value, typename Error, typename = void>
-    class either;
+    storage_t m_storage;
+};
 
-    template <typename Value, typename Error>
-    class either<Value, Error, typename std::enable_if<!std::is_void<Value>::value>::type>
+template <typename Left>
+class either_t<Left, void>
+{
+    struct left_t
+    {};
+
+    struct right_t
+    {};
+
+    struct empty_t
+    {};
+
+public:
+    static constexpr left_t left;
+    static constexpr right_t right;
+
+    constexpr either_t() = default;
+
+    template <typename... Args>
+    explicit constexpr either_t(left_t /* unused */, Args&&... args)
+        : m_storage(left, std::forward<Args>(args)...)
+    {}
+
+    template <typename... Args>
+    void construct(left_t /* unused */, Args&&... args)
     {
-    public:
-        using value_type = Value;
-        using error_type = Error;
+        ::new (std::addressof(this->get(left))) Left(std::forward<Args>(args)...);
+    }
 
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr either(success<value_type> item)
-            : m_has_value(true)
-        {
-            ::new (std::addressof(m_value)) value_type(std::move(item.m_storage));
-        }
-
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr either(fail<error_type> item)
-            : m_has_value(false)
-        {
-            ::new (std::addressof(m_error)) error_type(std::move(item.m_storage));
-        }
-
-        constexpr either(const either& that)
-            : m_has_value(that.m_has_value)
-        {
-            if (m_has_value)
-            {
-                ::new (std::addressof(m_value)) value_type(that.m_value);
-            }
-            else
-            {
-                ::new (std::addressof(m_error)) error_type(that.m_error);
-            }
-        }
-
-        constexpr either(either&& that) noexcept
-            : m_has_value(that.m_has_value)
-        {
-            if (m_has_value)
-            {
-                ::new (std::addressof(m_value)) value_type(std::move(that.m_value));
-            }
-            else
-            {
-                ::new (std::addressof(m_error)) error_type(std::move(that.m_error));
-            }
-        }
-
-        EITHER_CONSTEXPR_DESTRUCTOR
-        ~either()
-        {
-            if (m_has_value)
-            {
-                m_value.~value_type();
-            }
-            else
-            {
-                m_error.~error_type();
-            }
-        }
-
-        either& operator=(const either& that)
-        {
-            if (this != &that)
-            {
-                m_has_value = that.m_has_value;
-
-                if (m_has_value)
-                {
-                    ::new (std::addressof(m_value)) value_type(that.m_value);
-                }
-                else
-                {
-                    ::new (std::addressof(m_error)) error_type(that.m_error);
-                }
-            }
-
-            return *this;
-        }
-
-        either& operator=(either&& that) noexcept
-        {
-            if (this != &that)
-            {
-                m_has_value = that.m_has_value;
-
-                if (m_has_value)
-                {
-                    ::new (std::addressof(m_value)) value_type(std::move(that.m_value));
-                }
-                else
-                {
-                    ::new (std::addressof(m_error)) error_type(std::move(that.m_error));
-                }
-            }
-
-            return *this;
-        }
-
-        value_type& value()
-        {
-            if (!m_has_value)
-            {
-                detail::throw_or_mimic("either has no value type!");
-            }
-
-            return m_value;
-        }
-
-        EITHER_NODISCARD
-        const value_type& value() const
-        {
-            if (!m_has_value)
-            {
-                detail::throw_or_mimic("either has no value type!");
-            }
-
-            return m_value;
-        }
-
-        error_type& error()
-        {
-            if (m_has_value)
-            {
-                detail::throw_or_mimic("either has no error type!");
-            }
-
-            return m_error;
-        }
-
-        EITHER_NODISCARD
-        const error_type& error() const
-        {
-            if (m_has_value)
-            {
-                detail::throw_or_mimic("either has no error type!");
-            }
-
-            return m_error;
-        }
-
-        EITHER_NODISCARD
-        bool has_value() const
-        {
-            return m_has_value;
-        }
-
-        template <typename F>
-        constexpr auto and_then(F&& func)
-        {
-            using U = detail::result_of<F, value_type>;
-
-            if (!m_has_value)
-            {
-                return U(utils::fail<error_type>(m_error));
-            }
-
-            return std::forward<F>(func)(m_value);
-        }
-
-        template <typename F>
-        constexpr auto or_else(F&& func)
-        {
-            using U = detail::result_of<F, error_type>;
-
-            if (m_has_value)
-            {
-                return U(utils::fail<error_type>(m_error));
-            }
-
-            return std::forward<F>(func)(m_error);
-        }
-
-        explicit operator bool() const noexcept
-        {
-            return m_has_value;
-        }
-
-        constexpr value_type& operator*()
-        {
-            return m_value;
-        }
-
-        EITHER_NODISCARD
-        constexpr const value_type& operator*() const
-        {
-            return m_value;
-        }
-
-    private:
-        union
-        {
-            value_type m_value;
-            error_type m_error;
-        };
-
-        bool m_has_value;
-    };
-
-    template <typename Value, typename Error>
-    class either<Value, Error, typename std::enable_if<std::is_void<Value>::value>::type>
+    void destruct(left_t /* unused */)
     {
-    public:
-        using value_type = Value;
-        using error_type = Error;
+        this->get(left).~Left();
+    }
 
-        constexpr either()
-            : m_has_value(true)
+    constexpr Left& get(left_t /* unused */) noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_left;
+    }
+
+    [[nodiscard]] constexpr const Left& get(left_t /* unused */) const noexcept
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
+        return m_storage.m_left;
+    }
+
+private:
+    union storage_t
+    {
+        constexpr storage_t()
+            : m_nothing()
         {}
 
-        // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-        constexpr either(fail<error_type> item)
-            : m_has_value(false)
-        {
-            ::new (std::addressof(m_error)) error_type(std::move(item.m_storage));
-        }
-
-        constexpr either(const either& that)
-            : m_has_value(that.m_has_value)
-        {
-            if (!m_has_value)
-            {
-                ::new (std::addressof(m_error)) error_type(that.m_error);
-            }
-        }
-
-        constexpr either(either&& that) noexcept
-            : m_has_value(that.m_has_value)
-        {
-            if (!m_has_value)
-            {
-                ::new (std::addressof(m_error)) error_type(std::move(that.m_error));
-            }
-        }
-
-        EITHER_CONSTEXPR_DESTRUCTOR
-        ~either()
-        {
-            if (!m_has_value)
-            {
-                m_error.~error_type();
-            }
-        }
-
-        either& operator=(const either& that)
-        {
-            if (this != &that)
-            {
-                m_has_value = that.m_has_value;
-
-                if (!m_has_value)
-                {
-                    ::new (std::addressof(m_error)) error_type(that.m_error);
-                }
-            }
-
-            return *this;
-        }
-
-        either& operator=(either&& that) noexcept
-        {
-            if (this != &that)
-            {
-                m_has_value = that.m_has_value;
-
-                if (!m_has_value)
-                {
-                    ::new (std::addressof(m_error)) error_type(std::move(that.m_error));
-                }
-            }
-
-            return *this;
-        }
-
-        constexpr void value() const
-        {
-            if (!m_has_value)
-            {
-                detail::throw_or_mimic("either has no value type!");
-            }
-        }
-
-        constexpr error_type& error()
-        {
-            if (m_has_value)
-            {
-                detail::throw_or_mimic("either has no error type!");
-            }
-
-            return m_error;
-        }
-
-        EITHER_NODISCARD
-        constexpr const error_type& error() const
-        {
-            if (m_has_value)
-            {
-                detail::throw_or_mimic("either has no error type!");
-            }
-
-            return m_error;
-        }
-
-        EITHER_NODISCARD
-        constexpr bool has_value() const
-        {
-            return m_has_value;
-        }
-
-        template <typename F>
-        constexpr auto and_then(F&& func)
-        {
-            using U = detail::result_of<F>;
-
-            if (!m_has_value)
-            {
-                return U(utils::fail<error_type>(m_error));
-            }
-
-            return std::forward<F>(func)();
-        }
-
-        template <typename F>
-        constexpr auto or_else(F&& func)
-        {
-            using U = detail::result_of<F, error_type>;
-
-            if (m_has_value)
-            {
-                return U(utils::fail<error_type>(m_error));
-            }
-
-            return std::forward<F>(func)(m_error);
-        }
-
-        explicit operator bool() const noexcept
-        {
-            return m_has_value;
-        }
-
-        constexpr void operator*() const
+        template <typename... Args>
+        explicit constexpr storage_t(left_t /* unused */, Args&&... args)
+            : m_left(std::forward<Args>(args)...)
         {}
 
-    private:
-        error_type m_error;
+        constexpr storage_t(const storage_t&) = delete;
+        constexpr storage_t(storage_t&&) noexcept = delete;
 
-        bool m_has_value;
+        ~storage_t() {};
+
+        constexpr storage_t& operator=(const storage_t&) = delete;
+        constexpr storage_t& operator=(storage_t&&) noexcept = delete;
+
+        Left m_left;
+        empty_t m_nothing;
     };
 
-#if __cplusplus >= 201703L
-    template <typename T>
-    success(T) -> success<T>;
+    storage_t m_storage;
+};
 
-    template <typename T>
-    fail(T) -> fail<T>;
-#endif  // __cplusplus
-
-}  // namespace utils
-
-#undef SUCCESS_NODISCARD
-#undef FAIL_NODISCARD
-#undef EITHER_NODISCARD
-
-#undef EITHER_CONSTEXPR_DESTRUCTOR
-
-// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 #endif  // EITHER_HPP
