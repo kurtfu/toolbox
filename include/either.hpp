@@ -26,8 +26,8 @@ class either_t
     {};
 
 public:
-    static constexpr left_t left;
-    static constexpr right_t right;
+    static constexpr left_t left{};
+    static constexpr right_t right{};
 
     constexpr either_t() = default;
 
@@ -134,8 +134,8 @@ class either_t<Left, void>
     {};
 
 public:
-    static constexpr left_t left;
-    static constexpr right_t right;
+    static constexpr left_t left{};
+    static constexpr right_t right{};
 
     constexpr either_t() = default;
 
