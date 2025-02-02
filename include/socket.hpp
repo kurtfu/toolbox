@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include <poll.h>
 #include <unistd.h>
 
 /// \cond
@@ -143,6 +144,23 @@ public:
         auto result = ::recv(m_descriptor, data, length, 0);
 
         if (result == 0 || result == -1)
+        {
+            return std::nullopt;
+        }
+
+        return static_cast<std::size_t>(result);
+    }
+
+    [[nodiscard]] std::optional<std::size_t> pool(int timeout) const
+    {
+        pollfd pfd{};
+
+        pfd.fd = m_descriptor;
+        pfd.events = POLLIN;
+
+        auto result = ::poll(std::addressof(pfd), 1, timeout);
+
+        if (result == -1)
         {
             return std::nullopt;
         }
