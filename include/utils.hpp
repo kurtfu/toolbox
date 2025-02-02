@@ -6,6 +6,7 @@
 
 /// \cond
 #include <chrono>
+#include <cstddef>
 #include <functional>
 #include <utility>
 
@@ -34,12 +35,12 @@ namespace utils
 /*****************************************************************************/
 /*** FUNCTION DEFINITIONS ****************************************************/
 
-template <typename Duration, typename Period, typename F, typename... Args>
-void repeat_for(Period period, F&& fn, Args&&... args)
+template <typename Duration, std::size_t Period, typename F, typename... Args>
+void repeat_for(F&& fn, Args&&... args)
 {
     auto start = std::chrono::steady_clock::now();
 
-    while (std::chrono::steady_clock::now() - start < Duration(period))
+    while (std::chrono::steady_clock::now() - start < Duration(Period))
     {
         std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
     }
