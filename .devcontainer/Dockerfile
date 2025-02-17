@@ -14,7 +14,9 @@ RUN set -eux; \
             gdb \
             git \
             graphviz \
+            iwyu \
             lcov \
+            ninja-build \
             pkg-config \
             python3 \
             tar \
