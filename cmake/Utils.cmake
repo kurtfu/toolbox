@@ -27,7 +27,7 @@ function(setup_executable target)
 endfunction()
 
 function(setup_library target)
-    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES DEFINES)
+    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES DEFINES ALIAS)
 
     cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
@@ -35,7 +35,7 @@ function(setup_library target)
         set(TARGET_TYPE STATIC)
     endif()
 
-    _setup_library_sources(${target} ${TARGET_TYPE})
+    _setup_library_sources(${target})
     _setup_target_includes(${target} PRIVATE)
     _setup_target_dependencies(${target})
     _setup_target_defines(${target})
@@ -60,10 +60,14 @@ macro(_setup_executable_sources target)
     )
 endmacro()
 
-macro(_setup_library_sources target type)
-    add_library(${target} ${type}
+macro(_setup_library_sources target)
+    add_library(${target} ${TARGET_TYPE}
         ${TARGET_SOURCES}
     )
+
+    if(DEFINED TARGET_ALIAS)
+        add_library(${TARGET_ALIAS} ALIAS ${target})
+    endif()
 endmacro()
 
 macro(_setup_target_includes target scope)
