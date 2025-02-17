@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(utils LANGUAGES CXX)
+project(toolbox LANGUAGES CXX)
 
 if(NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 20)
@@ -28,15 +28,4 @@ find_package(Catch2)
 include(CTest)
 include(Catch)
 
-setup_executable(utils-test
-    SOURCES
-        tests/either.cpp
-        tests/maybe.cpp
-    INCLUDES
-        include
-    DEPENDENCIES
-        Catch2::Catch2WithMain
-)
-
-catch_discover_tests(utils-test)
-add_coverage(utils-test)
+include(projects/toolbox.cmake)
