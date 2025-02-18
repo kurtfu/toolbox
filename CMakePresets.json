@@ -29,7 +29,8 @@
             "inherits": "common-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "ENABLE_IPO": "ON"
+                "ENABLE_IPO": "ON",
+                "OPTIMIZE_FOR_NATIVE": "ON"
             }
         },
         {

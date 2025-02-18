@@ -19,7 +19,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Coverage)
 include(Docs)
 include(Linter)
-include(Optimization)
 include(Utils)
 
 find_package(benchmark)

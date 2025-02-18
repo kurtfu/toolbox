@@ -1,4 +1,5 @@
 include(Linker)
+include(Optimization)
 include(Sanitizer)
 include(Warnings)
 
@@ -17,6 +18,7 @@ function(setup_executable target)
     endif()
 
     setup_target_link_strategy(${target})
+    setup_target_optimizations(${target})
 
     setup_target_warnings(${target})
     setup_target_for_sanitizer(${target})
@@ -45,6 +47,7 @@ function(setup_library target)
     endif()
 
     setup_target_link_strategy(${target})
+    setup_target_optimizations(${target})
 
     setup_target_warnings(${target})
     setup_target_for_sanitizer(${target})
