@@ -11,6 +11,7 @@
                 "ENABLE_COVERAGE": "OFF",
                 "ENABLE_LINTERS": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
+                "ENABLE_WARNINGS": "ON",
                 "USE_STATIC_STD": "OFF"
             }
         },

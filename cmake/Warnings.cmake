@@ -1,3 +1,5 @@
+option(ENABLE_WARNINGS "Enable compiler warnings for project targets" OFF)
+
 set(MSVC_WARNINGS
     /W4
     /w14242
@@ -68,6 +70,10 @@ else()
 endif()
 
 function(setup_target_warnings target)
+    if(NOT ENABLE_WARNINGS)
+        return()
+    endif()
+
     target_compile_options(${target}
         PRIVATE
             $<$<COMPILE_LANGUAGE:C>:${PROJECT_C_WARNINGS}>
