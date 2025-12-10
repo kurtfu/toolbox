@@ -1,8 +1,12 @@
+find_package(quill)
+
 setup_library(toolbox
     SOURCES
         src/utils.cpp
     INCLUDES
         include
+    DEPENDENCIES
+        quill::quill
 )
 
 setup_executable(toolbox-test

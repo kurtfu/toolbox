@@ -2,7 +2,9 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
     "dependencies": [
         "benchmark",
-        "catch2"
+        "catch2",
+        "quill",
+        "replxx"
     ],
     "overrides": [
         {
@@ -12,7 +14,15 @@
         {
             "name": "catch2",
             "version": "3.7.1"
+        },
+        {
+            "name": "quill",
+            "version": "11.0.1"
+        },
+        {
+            "name": "replxx",
+            "version": "0.0.4"
         }
     ],
-    "builtin-baseline": "b7601ed37e1e1ce11a4f61b4b94a23e39d465f1d"
+    "builtin-baseline": "1d611efb49276c65d69fb6d010c2aaaf039322b0"
 }
