@@ -22,8 +22,8 @@ public:
     {
         auto& self = instance();
 
-        self.m_terminal.print(message.data());
-        self.m_terminal.print("\n");
+        self.m_terminal.print(message.data());  // NOLINT(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
+        self.m_terminal.print("\n");            // NOLINT(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     }
 
     static std::string input()
