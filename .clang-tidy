@@ -2,6 +2,7 @@
 Checks: '-*,
     boost-*,
     bugprone-*,
+    -bugprone-suspicious-stringview-data-usage,
     cert-*,
     clang-analyzer-*,
     concurrency-*,
