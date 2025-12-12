@@ -9,7 +9,7 @@ function(setup_executable target)
     cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
 
     _setup_executable_sources(${target})
-    _setup_target_includes(${target} PUBLIC)
+    _setup_target_includes(${target})
     _setup_target_dependencies(${target})
     _setup_target_defines(${target})
 
@@ -38,7 +38,7 @@ function(setup_library target)
     endif()
 
     _setup_library_sources(${target})
-    _setup_target_includes(${target} PRIVATE)
+    _setup_target_includes(${target})
     _setup_target_dependencies(${target})
     _setup_target_defines(${target})
 
@@ -73,7 +73,7 @@ macro(_setup_library_sources target)
     endif()
 endmacro()
 
-macro(_setup_target_includes target scope)
+macro(_setup_target_includes target)
     set(REGULAR_INCLUDES "")
     set(SYSTEM_INCLUDES "")
 
@@ -93,12 +93,12 @@ macro(_setup_target_includes target scope)
     endforeach()
 
     target_include_directories(${target}
-        ${scope}
+        PUBLIC
             ${REGULAR_INCLUDES}
     )
 
     target_include_directories(${target} SYSTEM
-        PRIVATE
+        PUBLIC
             ${SYSTEM_INCLUDES}
     )
 endmacro()
