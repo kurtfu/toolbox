@@ -13,6 +13,15 @@
 #include <quill/sinks/ConsoleSink.h>
 #include <quill/sinks/FileSink.h>
 
+#include <quill/core/PatternFormatterOptions.h>
+
+/// \cond
+#include <memory>
+#include <string>
+#include <utility>
+
+/// \endcond
+
 /*****************************************************************************/
 /*** MACRO DEFINITIONS *******************************************************/
 
