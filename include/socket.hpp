@@ -4,12 +4,17 @@
 /*****************************************************************************/
 /*** HEADER INCLUDES *********************************************************/
 
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#if defined(_WIN32)
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+#else
+    #include <arpa/inet.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
 
-#include <poll.h>
-#include <unistd.h>
+    #include <poll.h>
+    #include <unistd.h>
+#endif
 
 /// \cond
 #include <cstddef>
@@ -21,12 +26,37 @@
 
 /// \endcond
 
+#if defined(_WIN32)
+// NOLINTNEXTLINE(cert-err58-cpp)
+static const bool initialized = [] {
+    std::ignore = std::atexit([] {
+        if (initialized)
+        {
+            WSACleanup();
+        }
+    });
+
+    WSADATA data;
+    WSAStartup(MAKEWORD(2, 2), &data);
+
+    return true;
+}();
+#endif
+
 /*****************************************************************************/
 /*** CLASSES *****************************************************************/
 
 class socket_t
 {
     static constexpr int default_backlog_length = 128;
+
+#if defined(_WIN32)
+    using descriptor_t = SOCKET;
+    static constexpr descriptor_t invalid_descriptor = INVALID_SOCKET;
+#else
+    using descriptor_t = int;
+    static constexpr descriptor_t invalid_descriptor = -1;
+#endif
 
 public:
     socket_t()
@@ -36,7 +66,7 @@ public:
     socket_t(socket_t&& that) noexcept
         : m_descriptor(that.m_descriptor)
     {
-        that.m_descriptor = -1;
+        that.m_descriptor = invalid_descriptor;
     }
 
     socket_t& operator=(socket_t&& that) noexcept
@@ -44,7 +74,7 @@ public:
         if (this != std::addressof(that))
         {
             this->m_descriptor = that.m_descriptor;
-            that.m_descriptor = -1;
+            that.m_descriptor = invalid_descriptor;
         }
 
         return *this;
@@ -71,10 +101,17 @@ public:
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         auto* sock_addr = reinterpret_cast<sockaddr*>(&socket);
 
+#if defined(__WIN32)
+        char enable = 1;
+#else
         int enable = 1;
+#endif
 
         ::setsockopt(m_descriptor, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
+
+#if defined(__linux__) || defined(__APPLE__)
         ::setsockopt(m_descriptor, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable));
+#endif
 
         std::ignore = ::bind(m_descriptor, sock_addr, sizeof(socket));
     }
@@ -113,12 +150,17 @@ public:
 
     void close()
     {
-        if (m_descriptor != -1)
+        if (m_descriptor != invalid_descriptor)
         {
+#if defined(__WIN32)
+            ::shutdown(m_descriptor, SD_BOTH);
+            ::closesocket(m_descriptor);
+#else
             ::shutdown(m_descriptor, AF_INET);
             ::close(m_descriptor);
+#endif
 
-            m_descriptor = -1;
+            m_descriptor = invalid_descriptor;
         }
     }
 
@@ -129,7 +171,16 @@ public:
 
     [[nodiscard]] std::optional<std::size_t> send(const void* data, std::size_t length) const
     {
-        auto result = ::send(m_descriptor, data, length, 0);
+#if defined(__WIN32)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        const auto* buffer = reinterpret_cast<const char*>(data);
+        auto size = static_cast<int>(length);
+#else
+        const auto* buffer = data;
+        auto size = static_cast<ssize_t>(length);
+#endif
+
+        auto result = ::send(m_descriptor, buffer, size, 0);
 
         if (result == -1)
         {
@@ -141,7 +192,16 @@ public:
 
     [[nodiscard]] std::optional<std::size_t> recv(void* data, std::size_t length) const
     {
-        auto result = ::recv(m_descriptor, data, length, 0);
+#if defined(__WIN32)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        auto* buffer = reinterpret_cast<char*>(data);
+        auto size = static_cast<int>(length);
+#else
+        auto* buffer = data;
+        auto size = static_cast<ssize_t>(length);
+#endif
+
+        auto result = ::recv(m_descriptor, buffer, size, 0);
 
         if (result == 0 || result == -1)
         {
@@ -157,9 +217,13 @@ public:
 
         pfd.fd = m_descriptor;
         pfd.events = POLLIN;
+        pfd.revents = 0;
 
+#if defined(__WIN32)
+        auto result = WSAPoll(std::addressof(pfd), 1, timeout);
+#else
         auto result = ::poll(std::addressof(pfd), 1, timeout);
-
+#endif
         if (result == -1)
         {
             return std::nullopt;
@@ -169,11 +233,11 @@ public:
     }
 
 private:
-    explicit socket_t(int descriptor)
+    explicit socket_t(descriptor_t descriptor)
         : m_descriptor(descriptor)
     {}
 
-    int m_descriptor;
+    descriptor_t m_descriptor;
 };
 
 #endif  // SOCKET_HPP
