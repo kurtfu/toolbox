@@ -7,7 +7,7 @@
 #include <quill/Backend.h>
 #include <quill/Frontend.h>
 
-#include <quill/LogMacros.h>
+#include <quill/LogFunctions.h>
 #include <quill/Logger.h>
 
 #include <quill/sinks/ConsoleSink.h>
@@ -23,13 +23,6 @@
 /// \endcond
 
 /*****************************************************************************/
-/*** MACRO DEFINITIONS *******************************************************/
-
-#define LOGGER_INFO(logger, fmt, ...)    QUILL_LOG_INFO(logger, fmt, ##__VA_ARGS__)
-#define LOGGER_WARNING(logger, fmt, ...) QUILL_LOG_WARNING(logger, fmt, ##__VA_ARGS__)
-#define LOGGER_ERROR(logger, fmt, ...)   QUILL_LOG_ERROR(logger, fmt, ##__VA_ARGS__)
-
-/*****************************************************************************/
 /*** CLASSES *****************************************************************/
 
 class logger
@@ -37,6 +30,15 @@ class logger
     using logger_t = quill::Logger*;
 
 public:
+    template <typename Logger, typename... Args>
+    using info = quill::info<Logger, Args...>;
+
+    template <typename Logger, typename... Args>
+    using warning = quill::warning<Logger, Args...>;
+
+    template <typename Logger, typename... Args>
+    using error = quill::error<Logger, Args...>;
+
     static void init(const std::string& file = "")
     {
         auto& self = instance();
