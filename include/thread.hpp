@@ -78,7 +78,7 @@ public:
         cpu_set_t cpuset{};
 
         CPU_ZERO(&cpuset);
-        CPU_SET(core, &cpuset);
+        CPU_SET(static_cast<std::size_t>(core), &cpuset);
 
         pthread_setaffinity_np(m_thread.native_handle(), sizeof(cpuset), &cpuset);
 #endif
