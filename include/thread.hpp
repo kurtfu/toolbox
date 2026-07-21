@@ -84,6 +84,23 @@ public:
 #endif
     }
 
+    static void pin_this_thread_to_core(int index)
+    {
+        if (index == -1)
+        {
+            return;
+        }
+
+#if defined(__linux__)
+        cpu_set_t cpuset{};
+
+        CPU_ZERO(&cpuset);
+        CPU_SET(core, &cpuset);
+
+        pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
+#endif
+    }
+
 private:
     std::thread m_thread;
 };
