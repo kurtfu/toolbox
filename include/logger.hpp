@@ -51,7 +51,10 @@ public:
 
         if (!file.empty())
         {
-            auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(file);
+            quill::FileSinkConfig config;
+            config.set_open_mode("w");
+
+            auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(file, config);
             self.m_file_logger = quill::Frontend::create_or_get_logger("file", std::move(file_sink), format);
         }
     }
