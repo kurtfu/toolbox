@@ -12,7 +12,7 @@ setup_library(toolbox
         SYSTEM ${REPLXX_INCLUDE_DIR}
     DEPENDENCIES
         quill::quill
-        replxx::replxx
+        INTERFACE replxx::replxx
         Threads::Threads
 )
 
