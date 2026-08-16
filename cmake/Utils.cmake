@@ -106,18 +106,25 @@ endmacro()
 macro(_setup_target_dependencies target)
     set(DEPENDENCY_DIRECTORIES "")
     set(DEPENDENCY_LIBRARIES "")
+    set(DEPENDENCY_INTERFACES "")
 
     set(IS_DIRECTORY FALSE)
+    set(IS_INTERFACE FALSE)
 
     foreach(token IN LISTS TARGET_DEPENDENCIES)
         if(token STREQUAL "DIRECTORY")
             set(IS_DIRECTORY TRUE)
+        elseif(token STREQUAL "INTERFACE")
+            set(IS_INTERFACE TRUE)
         else()
-            if(NOT IS_DIRECTORY)
-                list(APPEND DEPENDENCY_LIBRARIES ${token})
-            else()
+            if(IS_DIRECTORY)
                 list(APPEND DEPENDENCY_DIRECTORIES ${token})
                 set(IS_DIRECTORY FALSE)
+            elseif(IS_INTERFACE)
+                list(APPEND DEPENDENCY_INTERFACES ${token})
+                set(IS_INTERFACE FALSE)
+            else()
+                list(APPEND DEPENDENCY_LIBRARIES ${token})
             endif()
         endif()
     endforeach()
@@ -130,6 +137,11 @@ macro(_setup_target_dependencies target)
     target_link_libraries(${target}
         PRIVATE
             ${DEPENDENCY_LIBRARIES}
+    )
+
+    target_link_libraries(${target}
+        INTERFACE
+            ${DEPENDENCY_INTERFACES}
     )
 endmacro()
 
