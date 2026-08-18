@@ -9,7 +9,7 @@
     "overrides": [
         {
             "name": "benchmark",
-            "version": "1.5.5"
+            "version": "1.9.5"
         },
         {
             "name": "catch2",
@@ -24,5 +24,5 @@
             "version": "0.0.4"
         }
     ],
-    "builtin-baseline": "1d611efb49276c65d69fb6d010c2aaaf039322b0"
+    "builtin-baseline": "c5a15727ee70fddf0296f0d8aafc3f58916fefac"
 }
