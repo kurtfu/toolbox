@@ -1,5 +1,7 @@
 option(USE_STATIC_STD "Use static version of standard libraries" OFF)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(GCC_C_LINK_FLAGS
     -static-libgcc
 )
