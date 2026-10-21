@@ -4,6 +4,8 @@
 /*****************************************************************************/
 /*** HEADER INCLUDES *********************************************************/
 
+#include "result.hpp"
+
 #if defined(_WIN32)
     #include <winsock2.h>
     #include <ws2tcpip.h>
@@ -48,17 +50,21 @@ static const bool initialized = [] {
 
 class socket_t
 {
-    static constexpr int default_backlog_length = 128;
+    friend success_t<socket_t>;
 
 #if defined(_WIN32)
     using descriptor_t = SOCKET;
     static constexpr descriptor_t invalid_descriptor = INVALID_SOCKET;
+    static constexpr int socket_error = SOCKET_ERROR;
 #else
     using descriptor_t = int;
     static constexpr descriptor_t invalid_descriptor = -1;
+    static constexpr int socket_error = -1;
 #endif
 
 public:
+    static constexpr int default_backlog_length = 128;
+
     socket_t()
         : m_descriptor(::socket(AF_INET, SOCK_STREAM, 0))
     {}
@@ -88,7 +94,7 @@ public:
     socket_t(const socket_t& /* that */) = delete;
     socket_t& operator=(const socket_t& /* that */) = delete;
 
-    void bind(std::string_view addr, uint16_t port) const
+    [[nodiscard]] result_t<void, int> bind(std::string_view addr, uint16_t port) const
     {
         sockaddr_in socket{};
 
@@ -113,15 +119,29 @@ public:
         ::setsockopt(m_descriptor, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable));
 #endif
 
-        std::ignore = ::bind(m_descriptor, sock_addr, sizeof(socket));
+        auto result = ::bind(m_descriptor, sock_addr, sizeof(socket));
+
+        if (result == socket_error)
+        {
+            return fail_t<int>(errno);
+        }
+
+        return {};
     }
 
-    void listen(int backlog = default_backlog_length) const
+    [[nodiscard]] result_t<void, int> listen(int backlog = default_backlog_length) const
     {
-        std::ignore = ::listen(m_descriptor, backlog);
+        auto result = ::listen(m_descriptor, backlog);
+
+        if (result == socket_error)
+        {
+            return fail_t<int>(errno);
+        }
+
+        return {};
     }
 
-    [[nodiscard]] socket_t accept() const
+    [[nodiscard]] [[nodiscard]] result_t<socket_t, int> accept() const
     {
         sockaddr_in socket{};
         socklen_t socket_length = sizeof(socket);
@@ -129,10 +149,17 @@ public:
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         auto* socket_addr = reinterpret_cast<sockaddr*>(&socket);
 
-        return socket_t(::accept(m_descriptor, socket_addr, &socket_length));
+        auto client_fd = ::accept(m_descriptor, socket_addr, &socket_length);
+
+        if (client_fd == invalid_descriptor)
+        {
+            return fail_t<int>(errno);
+        }
+
+        return success_t<socket_t>{client_fd};
     }
 
-    void connect(std::string_view addr, uint16_t port) const
+    [[nodiscard]] result_t<void, int> connect(std::string_view addr, uint16_t port) const
     {
         sockaddr_in socket{};
 
@@ -145,7 +172,14 @@ public:
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         auto* socket_addr = reinterpret_cast<sockaddr*>(&socket);
 
-        std::ignore = ::connect(m_descriptor, socket_addr, sizeof(socket));
+        auto result = ::connect(m_descriptor, socket_addr, sizeof(socket));
+
+        if (result == socket_error)
+        {
+            return fail_t<int>(errno);
+        }
+
+        return {};
     }
 
     void close()
@@ -177,7 +211,7 @@ public:
         auto size = static_cast<int>(length);
 #else
         const auto* buffer = data;
-        auto size = static_cast<ssize_t>(length);
+        auto size = length;
 #endif
 
         auto result = ::send(m_descriptor, buffer, size, 0);
