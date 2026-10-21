@@ -35,12 +35,13 @@ namespace utils
 /*****************************************************************************/
 /*** FUNCTION DEFINITIONS ****************************************************/
 
-template <typename Duration, std::size_t Period, typename F, typename... Args>
-void repeat_for(F&& fn, Args&&... args)
+template <typename Rep, typename Period, typename F, typename... Args>
+    requires std::invocable<F, Args...> && std::is_void_v<std::invoke_result_t<F, Args...>>
+void repeat_for(std::chrono::duration<Rep, Period> duration, F&& fn, Args&&... args)
 {
     auto start = std::chrono::steady_clock::now();
 
-    while (std::chrono::steady_clock::now() - start < Duration(Period))
+    while (std::chrono::steady_clock::now() - start < duration)
     {
         std::invoke(std::forward<F>(fn), std::forward<Args>(args)...);
     }
