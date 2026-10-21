@@ -8,7 +8,7 @@ setup_library(toolbox
     SOURCES
         src/utils.cpp
     INCLUDES
-        include
+        src
         SYSTEM ${REPLXX_INCLUDE_DIR}
     DEPENDENCIES
         quill::quill
@@ -21,7 +21,7 @@ setup_executable(toolbox-test
         tests/either.cpp
         tests/maybe.cpp
     INCLUDES
-        include
+        src
     DEPENDENCIES
         Catch2::Catch2WithMain
 )
