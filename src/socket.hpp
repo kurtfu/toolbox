@@ -24,7 +24,6 @@
 #include <memory>
 #include <optional>
 #include <string_view>
-#include <tuple>
 
 /// \endcond
 
@@ -232,7 +231,7 @@ public:
         auto size = static_cast<int>(length);
 #else
         auto* buffer = data;
-        auto size = static_cast<ssize_t>(length);
+        auto size = static_cast<size_t>(length);
 #endif
 
         auto result = ::recv(m_descriptor, buffer, size, 0);
