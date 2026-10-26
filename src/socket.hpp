@@ -6,7 +6,7 @@
 
 #include "result.hpp"
 
-#if defined(_WIN32)
+#if defined(__WIN32)
     #include <winsock2.h>
     #include <ws2tcpip.h>
 #else
@@ -27,7 +27,7 @@
 
 /// \endcond
 
-#if defined(_WIN32)
+#if defined(__WIN32)
 // NOLINTNEXTLINE(cert-err58-cpp)
 static const bool initialized = [] {
     std::ignore = std::atexit([] {
@@ -44,6 +44,12 @@ static const bool initialized = [] {
 }();
 #endif
 
+#if defined(__WIN32)
+    #define SOCKET_ERROR_CODE WSAGetLastError()
+#else
+    #define SOCKET_ERROR_CODE errno
+#endif
+
 /*****************************************************************************/
 /*** CLASSES *****************************************************************/
 
@@ -51,7 +57,7 @@ class socket_t
 {
     friend success_t<socket_t>;
 
-#if defined(_WIN32)
+#if defined(__WIN32)
     using descriptor_t = SOCKET;
     static constexpr descriptor_t invalid_descriptor = INVALID_SOCKET;
     static constexpr int socket_error = SOCKET_ERROR;
@@ -78,6 +84,8 @@ public:
     {
         if (this != std::addressof(that))
         {
+            close();
+
             this->m_descriptor = that.m_descriptor;
             that.m_descriptor = invalid_descriptor;
         }
@@ -122,7 +130,7 @@ public:
 
         if (result == socket_error)
         {
-            return fail_t<int>(errno);
+            return fail_t<int>(SOCKET_ERROR_CODE);
         }
 
         return {};
@@ -134,13 +142,13 @@ public:
 
         if (result == socket_error)
         {
-            return fail_t<int>(errno);
+            return fail_t<int>(SOCKET_ERROR_CODE);
         }
 
         return {};
     }
 
-    [[nodiscard]] [[nodiscard]] result_t<socket_t, int> accept() const
+    [[nodiscard]] result_t<socket_t, int> accept() const
     {
         sockaddr_in socket{};
         socklen_t socket_length = sizeof(socket);
@@ -152,7 +160,7 @@ public:
 
         if (client_fd == invalid_descriptor)
         {
-            return fail_t<int>(errno);
+            return fail_t<int>(SOCKET_ERROR_CODE);
         }
 
         return success_t<socket_t>{client_fd};
@@ -175,7 +183,7 @@ public:
 
         if (result == socket_error)
         {
-            return fail_t<int>(errno);
+            return fail_t<int>(SOCKET_ERROR_CODE);
         }
 
         return {};
@@ -189,7 +197,7 @@ public:
             ::shutdown(m_descriptor, SD_BOTH);
             ::closesocket(m_descriptor);
 #else
-            ::shutdown(m_descriptor, AF_INET);
+            ::shutdown(m_descriptor, SHUT_RDWR);
             ::close(m_descriptor);
 #endif
 
@@ -244,7 +252,7 @@ public:
         return static_cast<std::size_t>(result);
     }
 
-    [[nodiscard]] std::optional<std::size_t> pool(int timeout) const
+    [[nodiscard]] std::optional<std::size_t> poll(int timeout) const
     {
         pollfd pfd{};
 
