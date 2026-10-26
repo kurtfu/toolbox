@@ -95,7 +95,7 @@ public:
         cpu_set_t cpuset{};
 
         CPU_ZERO(&cpuset);
-        CPU_SET(core, &cpuset);
+        CPU_SET(index, &cpuset);
 
         pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
 #endif
