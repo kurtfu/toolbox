@@ -18,14 +18,11 @@
     #include <unistd.h>
 #endif
 
-/// \cond
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
-
-/// \endcond
 
 #if defined(__WIN32)
 // NOLINTNEXTLINE(cert-err58-cpp)

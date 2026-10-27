@@ -9,12 +9,9 @@
     #include <sched.h>
 #endif  // __linux__
 
-/// \cond
 #include <string_view>
 #include <thread>
 #include <utility>
-
-/// \endcond
 
 /*****************************************************************************/
 /*** CLASSES *****************************************************************/

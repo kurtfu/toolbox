@@ -15,12 +15,9 @@
 
 #include <quill/core/PatternFormatterOptions.h>
 
-/// \cond
 #include <memory>
 #include <string>
 #include <utility>
-
-/// \endcond
 
 /*****************************************************************************/
 /*** CLASSES *****************************************************************/
