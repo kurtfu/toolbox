@@ -10,7 +10,7 @@
                 "CMAKE_C_STANDARD": "99",
                 "CMAKE_CXX_STANDARD": "20",
                 "ENABLE_BENCHMARKS": "OFF",
-                "ENABLE_COVERAGE": "ON",
+                "ENABLE_COVERAGE": "OFF",
                 "ENABLE_LINTERS": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
                 "ENABLE_TESTS": "OFF",
