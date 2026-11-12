@@ -4,6 +4,9 @@ find_program(GCOV_BIN gcov)
 find_program(LCOV_BIN lcov)
 find_program(GENHTML_BIN genhtml)
 
+set(COVERAGE_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/docs/coverage")
+set(COVERAGE_EXCLUDES "*/catch2/*;*/tests/*;*/vcpkg_installed/*")
+
 set(Coverage_FOUND TRUE)
 
 if(NOT ENABLE_COVERAGE)
@@ -32,8 +35,7 @@ function(add_coverage target)
 
     target_compile_options(${target}
         PRIVATE
-            -fprofile-arcs
-            -ftest-coverage
+            --coverage
     )
 
     target_link_options(${target}
@@ -43,20 +45,29 @@ function(add_coverage target)
 
     add_custom_target("${target}-coverage"
         COMMAND
-            ${CMAKE_COMMAND} -E make_directory docs/coverage
+            ${CMAKE_COMMAND} -E make_directory ${COVERAGE_OUTPUT_DIR}
         COMMAND
-            ${LCOV_BIN} --zerocounters --directory .
+            ${LCOV_BIN} --zerocounters --directory ${PROJECT_BINARY_DIR}
         COMMAND
-            ${target}
+            $<TARGET_FILE:${target}>
         COMMAND
-            ${LCOV_BIN} --capture --no-external --directory . -o docs/coverage/base.info
+            ${LCOV_BIN} --capture --no-external
+                --directory ${PROJECT_BINARY_DIR}
+                --gcov-tool ${GCOV_BIN}
+                --directory ${PROJECT_BINARY_DIR}
+                --base-directory ${PROJECT_SOURCE_DIR}
+                -o ${COVERAGE_OUTPUT_DIR}/base.info
         COMMAND
-            ${LCOV_BIN} --remove docs/coverage/base.info 'catch2' 'tests' -o docs/coverage/filtered.info
+            ${LCOV_BIN} --remove ${COVERAGE_OUTPUT_DIR}/base.info ${COVERAGE_EXCLUDES}
+                -o ${COVERAGE_OUTPUT_DIR}/filtered.info
         COMMAND
-            ${GENHTML_BIN} docs/coverage/filtered.info --output-directory docs/coverage
+            ${GENHTML_BIN} ${COVERAGE_OUTPUT_DIR}/filtered.info --output-directory ${COVERAGE_OUTPUT_DIR}
         WORKING_DIRECTORY
-            ${PROJECT_SOURCE_DIR}
+            ${PROJECT_BINARY_DIR}
+        DEPENDS
+            ${target}
         COMMENT
             "Generating code coverage report"
+        VERBATIM
     )
 endfunction()
