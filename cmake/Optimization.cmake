@@ -9,7 +9,7 @@ set(CLANG_OPTIMIZATIONS
 set(CLANG_OPTIMIZED_CONFIGS
     -ffunction-sections
     -fdata-sections
-    -fno-plt
+    $<$<NOT:$<PLATFORM_ID:Apple>>:-fno-plt>
 )
 
 set(CLANG_PROFILINGS
