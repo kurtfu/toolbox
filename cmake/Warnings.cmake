@@ -14,10 +14,9 @@ set(MSVC_WARNINGS
     /w14928
 )
 
-set(CLANG_C_WARNINGS
+set(COMMON_C_WARNINGS
     -Wall
     -Wextra
-    -Wcast-align
     -Wconversion
     -Wdouble-promotion
     -Wformat-security
@@ -30,6 +29,11 @@ set(CLANG_C_WARNINGS
     -Wunused
 )
 
+set(CLANG_C_WARNINGS
+    ${COMMON_C_WARNINGS}
+    -Wcast-align
+)
+
 set(CLANG_CXX_WARNINGS
     ${CLANG_C_WARNINGS}
     -Wold-style-cast
@@ -38,12 +42,22 @@ set(CLANG_CXX_WARNINGS
 )
 
 set(GCC_C_WARNINGS
-    ${CLANG_C_WARNINGS}
+    ${COMMON_C_WARNINGS}
+    -Wcast-align=strict
+    -Wduplicated-cond
+    -Wduplicated-branches
+    -Wlogical-op
 )
 
 set(GCC_CXX_WARNINGS
-    ${CLANG_CXX_WARNINGS}
+    ${GCC_C_WARNINGS}
+    -Wold-style-cast
+    -Woverloaded-virtual
+    -Wnon-virtual-dtor
+    -Wuseless-cast
 )
+
+get_property(PROJECT_LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 
 if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(PROJECT_C_WARNINGS ${CLANG_C_WARNINGS})
@@ -52,7 +66,7 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
     set(PROJECT_C_WARNINGS ${MSVC_WARNINGS})
 else()
-    if("C" IN_LIST languages)
+    if("C" IN_LIST PROJECT_LANGUAGES)
         message(STATUS "No compiler warnings set for C compiler: '${CMAKE_C_COMPILER_ID}'")
     endif()
 endif()
@@ -64,7 +78,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(PROJECT_CXX_WARNINGS ${MSVC_WARNINGS})
 else()
-    if("CXX" IN_LIST languages)
+    if("CXX" IN_LIST PROJECT_LANGUAGES)
         message(STATUS "No compiler warnings set for CXX compiler: '${CMAKE_CXX_COMPILER_ID}'")
     endif()
 endif()
