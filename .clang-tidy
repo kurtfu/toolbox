@@ -18,7 +18,8 @@ Checks: '-*,
     readability-*,
 '
 WarningsAsErrors: ''
-HeaderFilterRegex: '.*(include).*'
+HeaderFilterRegex: '.*[/\\]src[/\\].*'
+ExcludeHeaderFilterRegex: '.*[/\\](vendor|vcpkg_installed)[/\\].*'
 FormatStyle: file
 CheckOptions:
   - {key: bugprone-easily-swappable-parameters.MinimumLength, value: 3}
