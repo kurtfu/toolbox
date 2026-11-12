@@ -13,7 +13,7 @@
                 "ENABLE_LINTERS": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
                 "ENABLE_WARNINGS": "ON",
-                "USE_STATIC_STD": "ON"
+                "SANITIZERS": ""
             }
         },
         {
