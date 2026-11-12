@@ -1,6 +1,6 @@
-find_package(quill)
-find_package(replxx)
-find_package(Threads)
+find_package(quill CONFIG REQUIRED)
+find_package(replxx CONFIG REQUIRED)
+find_package(Threads REQUIRED)
 
 find_path(REPLXX_INCLUDE_DIR NAMES "replxx.hxx")
 
@@ -16,7 +16,7 @@ setup_library(toolbox
         Threads::Threads
 )
 
-setup_executable(toolbox-test
+setup_test(toolbox-test
     SOURCES
         tests/either.cpp
         tests/maybe.cpp
@@ -25,6 +25,3 @@ setup_executable(toolbox-test
     DEPENDENCIES
         Catch2::Catch2WithMain
 )
-
-catch_discover_tests(toolbox-test)
-add_coverage(toolbox-test)
