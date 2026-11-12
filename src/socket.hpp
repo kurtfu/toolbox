@@ -41,6 +41,9 @@ static const bool initialized = [] {
 }();
 #endif
 
+/*****************************************************************************/
+/*** MACRO DEFINITIONS *******************************************************/
+
 #if defined(__WIN32)
     #define SOCKET_ERROR_CODE WSAGetLastError()
 #else
@@ -56,10 +59,12 @@ class socket_t
 
 #if defined(__WIN32)
     using descriptor_t = SOCKET;
+
     static constexpr descriptor_t invalid_descriptor = INVALID_SOCKET;
     static constexpr int socket_error = SOCKET_ERROR;
 #else
     using descriptor_t = int;
+
     static constexpr descriptor_t invalid_descriptor = -1;
     static constexpr int socket_error = -1;
 #endif
@@ -268,6 +273,11 @@ public:
         }
 
         return static_cast<std::size_t>(result);
+    }
+
+    [[nodiscard]] descriptor_t native_handle() const
+    {
+        return m_descriptor;
     }
 
 private:
