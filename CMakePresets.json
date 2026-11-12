@@ -13,7 +13,8 @@
                 "ENABLE_LINTERS": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
                 "ENABLE_WARNINGS": "ON",
-                "SANITIZERS": ""
+                "SANITIZERS": "",
+                "PROJECT_LINKER": ""
             }
         },
         {
