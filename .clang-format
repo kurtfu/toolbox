@@ -54,7 +54,7 @@ AccessModifierOffset: -4
 AllowShortEnumsOnASingleLine: true
 
 CompactNamespaces: false
-FixNamespaceComments: false
+FixNamespaceComments: true
 NamespaceIndentation: All
 
 #-- FUNCTIONS & LAMBDAS -------------------------------------------------------
@@ -151,7 +151,7 @@ IndentPPDirectives: BeforeHash
 SortIncludes: CaseSensitive
 SortUsingDeclarations: true
 
-AlwaysBreakTemplateDeclarations: Yes
+BreakTemplateDeclarations: Yes
 
 SpaceAfterTemplateKeyword: true
 SpacesInAngles: Never
