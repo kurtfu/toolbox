@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(toolbox LANGUAGES C CXX)
+project(sandbox LANGUAGES C CXX)
 
 if(NOT DEFINED CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 99)
@@ -23,7 +23,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(Benchmark)
 include(Docs)
 include(Linter)
 include(Utils)

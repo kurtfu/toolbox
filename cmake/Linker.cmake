@@ -1,8 +1,6 @@
-option(USE_STATIC_STD "Use static version of standard libraries" OFF)
-
 set(PROJECT_COMMON_LINK_OPTIONS
-    $<$<PLATFORM_ID:Linux>:-Wl,-z,now>
-    $<$<AND:$<PLATFORM_ID:Linux>,$<CONFIG:Release,RelWithDebInfo>>:-Wl,--gc-sections>
+    $<$<PLATFORM_ID:Linux>:LINKER:-z,now>
+    $<$<AND:$<PLATFORM_ID:Linux>,$<CONFIG:Release,RelWithDebInfo>>:LINKER:--gc-sections>
 )
 
 if(PROJECT_LINKER)

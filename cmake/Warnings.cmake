@@ -17,8 +17,10 @@ set(MSVC_WARNINGS
 set(COMMON_C_WARNINGS
     -Wall
     -Wextra
+    -Wcast-qual
     -Wconversion
     -Wdouble-promotion
+    -Wformat=2
     -Wformat-security
     -Wimplicit-fallthrough
     -Wnull-dereference
@@ -32,6 +34,7 @@ set(COMMON_C_WARNINGS
 set(CLANG_C_WARNINGS
     ${COMMON_C_WARNINGS}
     -Wcast-align
+    -Wextra-semi
 )
 
 set(CLANG_CXX_WARNINGS
@@ -39,6 +42,7 @@ set(CLANG_CXX_WARNINGS
     -Wold-style-cast
     -Woverloaded-virtual
     -Wnon-virtual-dtor
+    -Wzero-as-null-pointer-constant
 )
 
 set(GCC_C_WARNINGS
@@ -46,6 +50,7 @@ set(GCC_C_WARNINGS
     -Wcast-align=strict
     -Wduplicated-cond
     -Wduplicated-branches
+    -Wextra-semi
     -Wlogical-op
 )
 
@@ -55,6 +60,7 @@ set(GCC_CXX_WARNINGS
     -Woverloaded-virtual
     -Wnon-virtual-dtor
     -Wuseless-cast
+    -Wzero-as-null-pointer-constant
 )
 
 get_property(PROJECT_LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)

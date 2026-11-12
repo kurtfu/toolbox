@@ -22,7 +22,7 @@ set(CLANG_DEBUG_DEFINES
     _LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE
 )
 
-set(GCC_OPTIMIZATION
+set(GCC_OPTIMIZATIONS
     ${CLANG_OPTIMIZATIONS}
 )
 
@@ -69,14 +69,15 @@ function(_check_ipo_supported)
             return()
         endif()
 
-        set(IPO_SUPPORTED FALSE)
+        list(JOIN CMAKE_${language}_COMPILE_OPTIONS_IPO " " CMAKE_REQUIRED_FLAGS)
+        set(CMAKE_REQUIRED_LINK_OPTIONS -fuse-ld=${PROJECT_LINKER} ${CMAKE_${language}_LINK_OPTIONS_IPO} ${CMAKE_${language}_COMPILE_OPTIONS_IPO})
 
         check_source_compiles(${language}
             "static int f(int x) { return x + 1; } int main(void) { return f(-1); }"
-            ${IPO_SUPPORTED}
+            PROJECT_IPO_SUPPORTED_${language}
         )
 
-        if(NOT ${IPO_SUPPORTED})
+        if(NOT PROJECT_IPO_SUPPORTED_${language})
             set(${TARGET_RESULT} FALSE PARENT_SCOPE)
             set(${TARGET_OUTPUT} "Failed to link with ${PROJECT_LINKER}" PARENT_SCOPE)
             return()
@@ -102,7 +103,11 @@ endif()
 if(CMAKE_INTERPROCEDURAL_OPTIMIZATION
     AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"
     AND PROJECT_LINKER STREQUAL "lld")
-    set(PROJECT_IPO_LINK_OPTIONS -Wl,--thinlto-cache-dir=${PROJECT_BINARY_DIR}/thinlto-cache)
+    if(APPLE)
+        set(PROJECT_IPO_LINK_OPTIONS LINKER:-cache_path_lto,${PROJECT_BINARY_DIR}/thinlto-cache)
+    else()
+        set(PROJECT_IPO_LINK_OPTIONS LINKER:--thinlto-cache-dir=${PROJECT_BINARY_DIR}/thinlto-cache)
+    endif()
 else()
     set(PROJECT_IPO_LINK_OPTIONS "")
 endif()
@@ -142,8 +147,8 @@ endif()
 function(setup_target_optimizations target)
     target_compile_options(${target}
         PRIVATE
-            $<$<CONFIG:Release,RelWithDEbInfo>:${PROJECT_OPTIMIZED_CONFIGS}>
-            $<$<CONFIG:RelWithDebInfo>:${PROJECT_PROFILINGS}>
+        $<$<AND:$<COMPILE_LANGUAGE:C,CXX>,$<CONFIG:Release,RelWithDebInfo>>:${PROJECT_OPTIMIZED_CONFIGS}>
+        $<$<AND:$<COMPILE_LANGUAGE:C,CXX>,$<CONFIG:RelWithDebInfo>>:${PROJECT_PROFILINGS}>
     )
 
     target_compile_definitions(${target}
@@ -162,6 +167,6 @@ function(setup_target_optimizations target)
 
     target_compile_options(${target}
         PRIVATE
-            $<$<CONFIG:Release,RelWithDebInfo>:${PROJECT_OPTIMIZATIONS}>
+            $<$<AND:$<COMPILE_LANGUAGE:C,CXX>,$<CONFIG:Release,RelWithDebInfo>>:${PROJECT_OPTIMIZATIONS}>
     )
 endfunction()

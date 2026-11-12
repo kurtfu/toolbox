@@ -6,5 +6,5 @@ endif()
 
 find_package(Catch2 CONFIG REQUIRED)
 
-include(CTest)
+enable_testing()
 include(Catch)

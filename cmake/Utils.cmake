@@ -1,3 +1,4 @@
+include(Benchmark)
 include(Coverage)
 include(Linker)
 include(Optimization)
@@ -52,7 +53,7 @@ function(setup_library target)
     _setup_library_sources(${target})
     _setup_target_includes(${target} ${TARGET_INCLUDE_SCOPE})
     _setup_target_dependencies(${target})
-    _setup_target_defines(${target} ${TARGET_INCLUDE_SCOPE})
+    _setup_target_defines(${target} ${TARGET_DEFINE_SCOPE})
 
     if(DEFINED TARGET_PROPERTIES)
         _setup_target_properties(${target})
@@ -100,6 +101,30 @@ function(setup_test target)
     if(ENABLE_COVERAGE)
         add_coverage(${target})
     endif()
+endfunction()
+
+function(setup_benchmark target)
+    if(NOT ENABLE_BENCHMARKS)
+        return()
+    endif()
+
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES PROPERTIES DEFINES)
+
+    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
+
+    _setup_executable_sources(${target})
+    _setup_target_includes(${target} PRIVATE)
+    _setup_target_dependencies(${target})
+    _setup_target_defines(${target} PRIVATE)
+
+    if(DEFINED TARGET_PROPERTIES)
+        _setup_target_properties(${target})
+    endif()
+
+    setup_target_link_strategy(${target})
+    setup_target_optimizations(${target})
+
+    setup_target_warnings(${target})
 endfunction()
 
 macro(_setup_executable_sources target)
@@ -174,20 +199,35 @@ macro(_setup_target_dependencies target)
         endif()
     endforeach()
 
-    target_link_directories(${target}
-        PRIVATE
-            ${DEPENDENCY_DIRECTORIES}
-    )
+    get_target_property(DEPENDENCY_TARGET_TYPE ${target} TYPE)
 
-    target_link_libraries(${target}
-        PRIVATE
-            ${DEPENDENCY_LIBRARIES}
-    )
+    if(DEPENDENCY_TARGET_TYPE STREQUAL "INTERFACE_LIBRARY")
+        target_link_directories(${target}
+            INTERFACE
+                ${DEPENDENCY_DIRECTORIES}
+        )
 
-    target_link_libraries(${target}
-        INTERFACE
-            ${DEPENDENCY_INTERFACES}
-    )
+        target_link_libraries(${target}
+            INTERFACE
+                ${DEPENDENCY_LIBRARIES}
+                ${DEPENDENCY_INTERFACES}
+        )
+    else()
+        target_link_directories(${target}
+            PRIVATE
+                ${DEPENDENCY_DIRECTORIES}
+        )
+
+        target_link_libraries(${target}
+            PRIVATE
+                ${DEPENDENCY_LIBRARIES}
+        )
+
+        target_link_libraries(${target}
+            INTERFACE
+                ${DEPENDENCY_INTERFACES}
+        )
+    endif()
 endmacro()
 
 macro(_setup_target_defines target scope)

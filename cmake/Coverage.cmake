@@ -54,7 +54,6 @@ function(add_coverage target)
             ${LCOV_BIN} --capture --no-external
                 --directory ${PROJECT_BINARY_DIR}
                 --gcov-tool ${GCOV_BIN}
-                --directory ${PROJECT_BINARY_DIR}
                 --base-directory ${PROJECT_SOURCE_DIR}
                 -o ${COVERAGE_OUTPUT_DIR}/base.info
         COMMAND
