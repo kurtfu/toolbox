@@ -9,9 +9,11 @@
             "cacheVariables": {
                 "CMAKE_C_STANDARD": "99",
                 "CMAKE_CXX_STANDARD": "20",
-                "ENABLE_COVERAGE": "OFF",
+                "ENABLE_BENCHMARKS": "OFF",
+                "ENABLE_COVERAGE": "ON",
                 "ENABLE_LINTERS": "OFF",
                 "ENABLE_SANITIZERS": "OFF",
+                "ENABLE_TESTS": "OFF",
                 "ENABLE_WARNINGS": "ON",
                 "SANITIZERS": "",
                 "PROJECT_LINKER": ""
@@ -33,7 +35,15 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "ENABLE_IPO": "ON",
-                "OPTIMIZE_FOR_NATIVE": "ON"
+                "ENABLE_ARCH_OPTIMIZATIONS": "ON"
+            }
+        },
+        {
+            "name": "profile-base",
+            "hidden": true,
+            "inherits": "release-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
@@ -41,7 +51,8 @@
             "hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++"
+                "CMAKE_CXX_COMPILER": "clang++",
+                "PROJECT_LINKER": "lld"
             }
         },
         {
@@ -92,6 +103,15 @@
             "description": "Disable optimizations - include debug information."
         },
         {
+            "name": "clang-profile",
+            "inherits": [
+                "profile-base",
+                "clang-base"
+            ],
+            "displayName": "clang - RelWithDebInfo",
+            "description": "Optimize for speed - include debug information."
+        },
+        {
             "name": "clang-release",
             "inherits": [
                 "release-base",
@@ -108,6 +128,15 @@
             ],
             "displayName": "gcc - Debug",
             "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "gcc-profile",
+            "inherits": [
+                "profile-base",
+                "gcc-base"
+            ],
+            "displayName": "gcc - RelWithDebInfo",
+            "description": "Optimize for speed - include debug information."
         },
         {
             "name": "gcc-release",
@@ -128,6 +157,15 @@
             "description": "Disable optimizations - include debug information."
         },
         {
+            "name": "mingw-profile",
+            "inherits": [
+                "profile-base",
+                "mingw-base"
+            ],
+            "displayName": "mingw - RelWithDebInfo",
+            "description": "Optimize for speed - include debug information."
+        },
+        {
             "name": "mingw-release",
             "inherits": [
                 "release-base",
@@ -144,6 +182,15 @@
             ],
             "displayName": "msvc - Debug",
             "description": "Disable optimizations - include debug information."
+        },
+        {
+            "name": "msvc-profile",
+            "inherits": [
+                "profile-base",
+                "msvc-base"
+            ],
+            "displayName": "msvc - RelWithDebInfo",
+            "description": "Optimize for speed - include debug information."
         },
         {
             "name": "msvc-release",
