@@ -1,19 +1,22 @@
+include(Coverage)
 include(Linker)
 include(Optimization)
 include(Sanitizer)
+include(Tests)
 include(Warnings)
 
 function(setup_executable target)
-    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES DEFINES)
+    set(oneValueArgs INSTALL)
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES PROPERTIES DEFINES)
 
-    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(TARGET "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     _setup_executable_sources(${target})
-    _setup_target_includes(${target})
+    _setup_target_includes(${target} PRIVATE)
     _setup_target_dependencies(${target})
-    _setup_target_defines(${target})
+    _setup_target_defines(${target} PRIVATE)
 
-    if (DEFINED TARGET_PROPERTIES)
+    if(DEFINED TARGET_PROPERTIES)
         _setup_target_properties(${target})
     endif()
 
@@ -29,20 +32,60 @@ function(setup_executable target)
 endfunction()
 
 function(setup_library target)
-    set(multiValueArgs TYPE SOURCES INCLUDES DEPENDENCIES INSTALL PROPERTIES DEFINES ALIAS)
+    set(oneValueArgs TYPE ALIAS INSTALL)
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES PROPERTIES DEFINES)
 
-    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(TARGET "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT DEFINED TARGET_TYPE)
         set(TARGET_TYPE STATIC)
     endif()
 
-    _setup_library_sources(${target})
-    _setup_target_includes(${target})
-    _setup_target_dependencies(${target})
-    _setup_target_defines(${target})
+    if(TARGET_TYPE STREQUAL "INTERFACE")
+        set(TARGET_INCLUDE_SCOPE INTERFACE)
+        set(TARGET_DEFINE_SCOPE INTERFACE)
+    else()
+        set(TARGET_INCLUDE_SCOPE PUBLIC)
+        set(TARGET_DEFINE_SCOPE PRIVATE)
+    endif()
 
-    if (DEFINED TARGET_PROPERTIES)
+    _setup_library_sources(${target})
+    _setup_target_includes(${target} ${TARGET_INCLUDE_SCOPE})
+    _setup_target_dependencies(${target})
+    _setup_target_defines(${target} ${TARGET_INCLUDE_SCOPE})
+
+    if(DEFINED TARGET_PROPERTIES)
+        _setup_target_properties(${target})
+    endif()
+
+    if(NOT TARGET_TYPE STREQUAL "INTERFACE")
+        setup_target_link_strategy(${target})
+        setup_target_optimizations(${target})
+
+        setup_target_warnings(${target})
+        setup_target_for_sanitizer(${target})
+    endif()
+
+    if(TARGET_INSTALL)
+        install(TARGETS ${target} DESTINATION ${TARGET_INSTALL})
+    endif()
+endfunction()
+
+function(setup_test target)
+    if(NOT ENABLE_TESTS)
+        return()
+    endif()
+
+    set(multiValueArgs SOURCES INCLUDES DEPENDENCIES PROPERTIES DEFINES)
+
+    cmake_parse_arguments(TARGET "" "" "${multiValueArgs}" ${ARGN})
+
+    _setup_executable_sources(${target})
+    _setup_target_includes(${target} PRIVATE)
+    _setup_target_dependencies(${target})
+    _setup_target_defines(${target} PRIVATE)
+
+    if(DEFINED TARGET_PROPERTIES)
         _setup_target_properties(${target})
     endif()
 
@@ -52,8 +95,10 @@ function(setup_library target)
     setup_target_warnings(${target})
     setup_target_for_sanitizer(${target})
 
-    if(TARGET_INSTALL)
-        install(TARGETS ${target} DESTINATION ${TARGET_INSTALL})
+    catch_discover_tests(${target})
+
+    if(ENABLE_COVERAGE)
+        add_coverage(${target})
     endif()
 endfunction()
 
@@ -73,7 +118,7 @@ macro(_setup_library_sources target)
     endif()
 endmacro()
 
-macro(_setup_target_includes target)
+macro(_setup_target_includes target scope)
     set(REGULAR_INCLUDES "")
     set(SYSTEM_INCLUDES "")
 
@@ -93,12 +138,12 @@ macro(_setup_target_includes target)
     endforeach()
 
     target_include_directories(${target}
-        PUBLIC
+        ${scope}
             ${REGULAR_INCLUDES}
     )
 
     target_include_directories(${target} SYSTEM
-        PUBLIC
+        ${scope}
             ${SYSTEM_INCLUDES}
     )
 endmacro()
@@ -145,9 +190,9 @@ macro(_setup_target_dependencies target)
     )
 endmacro()
 
-macro(_setup_target_defines target)
+macro(_setup_target_defines target scope)
     target_compile_definitions(${target}
-        PRIVATE
+        ${scope}
             ${TARGET_DEFINES}
     )
 endmacro()
