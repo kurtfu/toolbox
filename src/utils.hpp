@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <functional>
+#include <string_view>
 #include <utility>
 
 /*****************************************************************************/
@@ -43,6 +44,7 @@ void repeat_for(std::chrono::duration<Rep, Period> duration, F&& fn, Args&&... a
     }
 }
 
+void annotate_and_terminate(std::string_view message, const char* file, int line);
 void annotate_and_terminate(const char* message, const char* file, int line);
 
 #endif  // UTILS_HPP
