@@ -190,6 +190,11 @@ namespace ini_parser
             return from_file(path.data());
         }
 
+        [[nodiscard]] bool has(const std::string& section) const
+        {
+            return m_data.contains(section);
+        }
+
         [[nodiscard]] bool has(const std::string& section, const std::string& key) const
         {
             auto iter = m_data.find(section);
