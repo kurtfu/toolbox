@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(sandbox LANGUAGES C CXX)
+project(toolbox LANGUAGES C CXX)
 
 if(NOT DEFINED CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 99)
