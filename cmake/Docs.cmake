@@ -27,7 +27,7 @@ endif()
 set(DOXYGEN_CALL_GRAPH ${DOXYGEN_HAVE_DOT})
 set(DOXYGEN_CALLER_GRAPH ${DOXYGEN_HAVE_DOT})
 
-doxygen_add_docs(docs
+doxygen_add_docs(${PROJECT_NAME}-docs
     WORKING_DIRECTORY
         ${PROJECT_SOURCE_DIR}
     COMMENT
