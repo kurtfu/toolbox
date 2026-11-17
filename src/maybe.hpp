@@ -477,7 +477,7 @@ private:
         constexpr storage_t(const storage_t&) = delete;
         constexpr storage_t(storage_t&&) noexcept = delete;
 
-        ~storage_t() {};
+        ~storage_t() {}
 
         constexpr storage_t& operator=(const storage_t&) = delete;
         constexpr storage_t& operator=(storage_t&&) noexcept = delete;
