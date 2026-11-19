@@ -231,9 +231,56 @@ macro(_setup_target_dependencies target)
 endmacro()
 
 macro(_setup_target_defines target scope)
+    set(DEFINE_PUBLICS "")
+    set(DEFINE_PRIVATES "")
+    set(DEFINE_INTERFACES "")
+    set(DEFINE_DEFAULTS "")
+
+    set(IS_PUBLIC FALSE)
+    set(IS_PRIVATE FALSE)
+    set(IS_INTERFACE FALSE)
+
+    foreach(token IN LISTS TARGET_DEFINES)
+        if(token STREQUAL "PUBLIC")
+            set(IS_PUBLIC TRUE)
+        elseif(token STREQUAL "PRIVATE")
+            set(IS_PRIVATE TRUE)
+        elseif(token STREQUAL "INTERFACE")
+            set(IS_INTERFACE TRUE)
+        else()
+            if(IS_PUBLIC)
+                list(APPEND DEFINE_PUBLICS ${token})
+                set(IS_PUBLIC FALSE)
+            elseif(IS_PRIVATE)
+                list(APPEND DEFINE_PRIVATES ${token})
+                set(IS_PRIVATE FALSE)
+            elseif(IS_INTERFACE)
+                list(APPEND DEFINE_INTERFACES ${token})
+                set(IS_INTERFACE FALSE)
+            else()
+                list(APPEND DEFINE_DEFAULTS ${token})
+            endif()
+        endif()
+    endforeach()
+
+    target_compile_definitions(${target}
+        PUBLIC
+            ${DEFINE_PUBLICS}
+    )
+
+    target_compile_definitions(${target}
+        PRIVATE
+            ${DEFINE_PRIVATES}
+    )
+
+    target_compile_definitions(${target}
+        INTERFACE
+            ${DEFINE_INTERFACES}
+    )
+
     target_compile_definitions(${target}
         ${scope}
-            ${TARGET_DEFINES}
+            ${DEFINE_DEFAULTS}
     )
 endmacro()
 
