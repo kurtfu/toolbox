@@ -12,6 +12,20 @@ set(MSVC_WARNINGS
     /w14555
     /w14826
     /w14928
+    /w14062
+    /w14191
+    /w14266
+    /w14365
+    /w14545
+    /w14546
+    /w14547
+    /w14549
+    /w14619
+    /w14905
+    /w14906
+    /w15038
+    /wd4324
+    /external:W0
 )
 
 set(COMMON_C_WARNINGS
