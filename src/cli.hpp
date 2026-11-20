@@ -6,6 +6,7 @@
 
 #include <replxx.hxx>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -23,14 +24,14 @@ public:
         self.m_terminal.print("\n");            // NOLINT(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     }
 
-    static std::string input()
+    static std::optional<std::string> input()
     {
         auto& self = instance();
         const auto* prompt = self.m_terminal.input("> ");
 
         if (!prompt)
         {
-            return "";
+            return std::nullopt;
         }
 
         self.m_terminal.history_add(prompt);
@@ -40,13 +41,13 @@ public:
     static void save(std::string_view file)
     {
         auto& self = instance();
-        self.m_terminal.history_load(file.data());
+        self.m_terminal.history_save(file.data());
     }
 
     static void load(std::string_view file)
     {
         auto& self = instance();
-        self.m_terminal.history_save(file.data());
+        self.m_terminal.history_load(file.data());
     }
 
 private:
