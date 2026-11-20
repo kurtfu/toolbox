@@ -1,7 +1,5 @@
 option(ENABLE_SANITIZERS "Enable code sanitizers for project targets" OFF)
 
-set(SANITIZERS "" CACHE STRING "Sanitizer: address,undefined,thread,leak,memory")
-
 if(ENABLE_SANITIZERS)
     if(NOT SANITIZERS)
         message(FATAL_ERROR "At least one sanitizer must be specified")
