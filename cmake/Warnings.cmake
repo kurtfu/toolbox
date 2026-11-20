@@ -64,12 +64,12 @@ set(GCC_C_WARNINGS
     -Wcast-align=strict
     -Wduplicated-cond
     -Wduplicated-branches
-    -Wextra-semi
     -Wlogical-op
 )
 
 set(GCC_CXX_WARNINGS
     ${GCC_C_WARNINGS}
+    -Wextra-semi
     -Wold-style-cast
     -Woverloaded-virtual
     -Wnon-virtual-dtor
