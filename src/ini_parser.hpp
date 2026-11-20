@@ -31,7 +31,7 @@ namespace ini_parser
     {
         [[nodiscard]] inline std::string_view trim(std::string_view text) noexcept
         {
-            constexpr std::string_view whitespace = "\t\r\n";
+            constexpr std::string_view whitespace = " \t\r\n\f\v";
 
             const auto begin = text.find_first_not_of(whitespace);
             const auto end = text.find_last_not_of(whitespace);
@@ -49,7 +49,11 @@ namespace ini_parser
 #if defined(__GNUC__) || defined(__clang__)
             int status = 0;
 
-            std::unique_ptr<char> result{abi::__cxa_demangle(name, nullptr, nullptr, &status)};
+            auto deleter = [](char* pointer){
+                std::free(pointer); // NOLINT(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
+            };
+
+            std::unique_ptr<char, decltype(deleter)> result{abi::__cxa_demangle(name, nullptr, nullptr, &status)};
             return (status == 0) ? result.get() : name;
 #else
             return name;
@@ -103,6 +107,8 @@ namespace ini_parser
                     result.emplace_back(std::move(detail::convert<T>(item)));
                 }
             }
+
+            return result;
         }
     };
 
