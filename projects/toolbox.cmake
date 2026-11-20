@@ -1,3 +1,6 @@
+option(TOOLBOX_BUILD_TESTS "Build project tests" OFF)
+option(TOOLBOX_BUILD_BENCHMARKS "Build project benchmarks" OFF)
+
 find_package(quill CONFIG REQUIRED)
 find_package(replxx CONFIG REQUIRED)
 find_package(Threads REQUIRED)
@@ -14,12 +17,14 @@ setup_library(toolbox
         Threads::Threads
 )
 
-setup_test(toolbox-test
-    SOURCES
-        tests/either.cpp
-        tests/maybe.cpp
-    INCLUDES
-        src
-    DEPENDENCIES
-        Catch2::Catch2WithMain
-)
+if(TOOLBOX_BUILD_TESTS)
+    setup_test(toolbox-test
+        SOURCES
+            tests/either.cpp
+            tests/maybe.cpp
+        INCLUDES
+            src
+        DEPENDENCIES
+            Catch2::Catch2WithMain
+    )
+endif()

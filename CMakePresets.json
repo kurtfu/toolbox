@@ -15,6 +15,8 @@
                 "ENABLE_SANITIZERS": "OFF",
                 "ENABLE_TESTS": "OFF",
                 "ENABLE_WARNINGS": "ON",
+                "TOOLBOX_BUILD_BENCHMARKS": "OFF",
+                "TOOLBOX_BUILD_TESTS": "OFF",
                 "SANITIZERS": "",
                 "PROJECT_LINKER": ""
             }
