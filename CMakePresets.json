@@ -192,9 +192,12 @@
         {
             "name": "msvc-profile",
             "inherits": [
-                "profile-base",
+                "release-base",
                 "msvc-base"
             ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            },
             "displayName": "msvc - RelWithDebInfo",
             "description": "Optimize for speed - include debug information."
         },
